@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Duckly - manage your everyday</title>
+  <title>Monkeywork — планировщик задач</title>
   <!-- 字体 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -597,7 +597,7 @@
           </div>
           <div class="drawer-webhook-form">
             <label for="webhook-url" class="sr-only">Webhook URL</label>
-            <input class="form-input" id="webhook-url" placeholder="https://hooks.example.com/notify" value="https://hooks.example.com/duckly-hook">
+            <input class="form-input" id="webhook-url" placeholder="https://hooks.example.com/notify" value="https://hooks.example.com/monkeywork-hook">
             <div class="webhook-event-grid">
               <div class="webhook-event-item active"><span class="wh-dot" style="background:var(--coral)"></span>到期提醒</div>
               <div class="webhook-event-item active"><span class="wh-dot" style="background:var(--blue)"></span>任务完成</div>
@@ -742,7 +742,7 @@
     </div>
 
     <div class="drawer-footer">
-      Duckly v1.0.0 · 所有数据本地 OPFS 存储 · 离线可用
+      Monkeywork v1.0.0 · 所有数据本地 OPFS 存储 · 离线可用
     </div>
   </div>
 
@@ -764,8 +764,8 @@
       <!-- Logo -->
       <div class="header-left">
         <div class="logo-group">
-          <img src="logo.svg" alt="Duckly" class="logo-icon">
-          <h1 class="app-title">Duckly</h1>
+          <img src="logo.svg" alt="Monkeywork" class="logo-icon">
+          <h1 class="app-title">Monkeywork</h1>
         </div>
         <!-- 视图切换Tab：四象限/日历/列表 -->
         <div class="tab-bar" style="margin:0" role="tablist">
@@ -2174,7 +2174,7 @@
     }
 
     // 演示：页面加载后显示一条提示
-    setTimeout(() => showToast('欢迎使用 Duckly 🦆', 'success'), 600);
+    setTimeout(() => showToast('欢迎使用 Monkeywork 🦆', 'success'), 600);
 
     // ==================== 模式切换 ====================
     function hideAllCalendarViews() {
@@ -2333,10 +2333,10 @@
       const isDark = el.classList.contains('on');
       el.setAttribute('aria-checked', isDark);
       document.documentElement.classList.toggle('dark', isDark);
-      safeSetItem('duckly-dark-mode', isDark ? '1' : '0');
+      safeSetItem('monkeywork-dark-mode', isDark ? '1' : '0');
     }
     // 恢复暗黑模式偏好
-    if (safeGetItem('duckly-dark-mode') === '1') {
+    if (safeGetItem('monkeywork-dark-mode') === '1') {
       document.documentElement.classList.add('dark');
       const dt = document.getElementById('darkModeToggle');
       if (dt) dt.classList.add('on');
@@ -2350,7 +2350,7 @@
       zh: { new_task: '新建任务', today: '今天', settings: '设置', search: '搜索任务…', new_tag: '新建标签名称', webhook_url: 'Webhook URL' },
       en: { new_task: 'New Task', today: 'Today', settings: 'Settings', search: 'Search tasks…', new_tag: 'New tag name', webhook_url: 'Webhook URL' }
     };
-    const currentLang = safeGetItem('duckly-lang') || 'zh';
+    const currentLang = safeGetItem('monkeywork-lang') || 'zh';
 
     // ==================== 统计弹窗 ====================
     document.querySelector('.btn-warning')?.addEventListener('click', () => {

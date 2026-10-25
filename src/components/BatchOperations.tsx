@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useI18n } from "../i18n/config";
 import { usePWA } from "../hooks/usePWA";
+import { useI18n } from "../i18n/config";
 import { useTaskStore } from "../stores/useTaskStore";
 import { useUIStore } from "../stores/useUIStore";
 import ConfirmDialog from "./ConfirmDialog";
@@ -17,10 +17,13 @@ export default function BatchOperations() {
 
   const handleConfirm = () => {
     if (confirmAction === "clearDone") {
-      const doneTasks = tasks.filter((t) => t.status === "done");
-      doneTasks.forEach((t) => deleteTask(t.id));
+      for (const task of tasks.filter((t) => t.status === "done")) {
+        deleteTask(task.id);
+      }
     } else if (confirmAction === "deleteAll") {
-      tasks.forEach((t) => deleteTask(t.id));
+      for (const task of tasks) {
+        deleteTask(task.id);
+      }
     }
     setConfirmAction(null);
   };
@@ -40,19 +43,25 @@ export default function BatchOperations() {
             gap: "var(--space-2)",
           }}
         >
-          <svg className="icon icon-20" viewBox="0 0 24 24" fill="none">
-            <path d="M12 4v16M4 12h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <svg className="icon icon-20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M12 4v16M4 12h16"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
           </svg>
           {t("batch.title")}
         </h3>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)" }}>
           <button
+            type="button"
             className="btn btn-small"
             onClick={() => doneCount > 0 && setConfirmAction("clearDone")}
             style={{ opacity: doneCount === 0 ? 0.4 : 1 }}
             disabled={doneCount === 0}
           >
-            <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
+            <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M9 11l3 3 5-5"
                 stroke="currentColor"
@@ -64,12 +73,13 @@ export default function BatchOperations() {
             {t("batch.clearDone")}
           </button>
           <button
+            type="button"
             className="btn btn-small btn-danger"
             onClick={() => tasks.length > 0 && setConfirmAction("deleteAll")}
             style={{ opacity: tasks.length === 0 ? 0.4 : 1 }}
             disabled={tasks.length === 0}
           >
-            <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
+            <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M5 7h14M10 7V4h4v3M6 7v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7"
                 stroke="currentColor"
@@ -80,8 +90,12 @@ export default function BatchOperations() {
             </svg>
             {t("batch.deleteAll")}
           </button>
-          <button className="btn btn-small btn-warning" onClick={() => setShowStatsModal(true)}>
-            <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
+          <button
+            type="button"
+            className="btn btn-small btn-warning"
+            onClick={() => setShowStatsModal(true)}
+          >
+            <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M5 12h14M12 5l7 7-7 7"
                 stroke="currentColor"
@@ -93,9 +107,17 @@ export default function BatchOperations() {
             {t("batch.stats")}
           </button>
           {canInstall && (
-            <button className="btn btn-small" onClick={installApp}>
-              <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
-                <rect x="4" y="6" width="16" height="14" rx="2" stroke="currentColor" strokeWidth="2" />
+            <button type="button" className="btn btn-small" onClick={installApp}>
+              <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect
+                  x="4"
+                  y="6"
+                  width="16"
+                  height="14"
+                  rx="2"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
                 <path d="M8 6V4h8v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 <path
                   d="M8 10l4 4 4-4"
@@ -133,9 +155,7 @@ export default function BatchOperations() {
               ? t("task.confirmDeleteAll").replace("{count}", String(tasks.length))
               : ""
         }
-        confirmText={
-          confirmAction === "deleteAll" ? t("batch.deleteAll") : t("batch.clearDone")
-        }
+        confirmText={confirmAction === "deleteAll" ? t("batch.deleteAll") : t("batch.clearDone")}
         variant="danger"
       />
     </>

@@ -1,32 +1,32 @@
-# Duckly AI API
+# Monkeywork AI API
 
-Duckly exposes a JSON-RPC 2.0 interface for AI agents to read and write task data. This document describes how AI agents can interact with Duckly programmatically.
+Monkeywork exposes a JSON-RPC 2.0 interface for AI agents to read and write task data. This document describes how AI agents can interact with Monkeywork programmatically.
 
 ---
 
 ## Quick Start
 
 ```js
-// In browser console (when Duckly is open):
-const duckly = window.__DucklyAI;
+// In browser console (when Monkeywork is open):
+const monkeywork = window.__MonkeyworkAI;
 
 // Read all tasks
-const tasks = await duckly.queryTasks({});
+const tasks = await monkeywork.queryTasks({});
 console.log(tasks);
 
 // Create a task
-const newTask = await duckly.createTask({
+const newTask = await monkeywork.createTask({
   title: "Review pull request",
   priority: "urgent-important",
-  tags: ["技术开发"],
+  tags: ["Разработка"],
 });
 ```
 
 ---
 
-## 1. `window.__DucklyAI` Global API
+## 1. `window.__MonkeyworkAI` Global API
 
-When Duckly is running in the browser, all AI methods are available through `window.__DucklyAI`. This is the easiest way for in-browser AI agents (extensions, devtools, bookmarklets) to interact.
+When Monkeywork is running in the browser, all AI methods are available through `window.__MonkeyworkAI`. This is the easiest way for in-browser AI agents (extensions, devtools, bookmarklets) to interact.
 
 ### Methods
 
@@ -35,10 +35,10 @@ When Duckly is running in the browser, all AI methods are available through `win
 Query tasks with optional filters.
 
 ```js
-await window.__DucklyAI.queryTasks({})
-await window.__DucklyAI.queryTasks({ status: "todo" })
-await window.__DucklyAI.queryTasks({ priority: "urgent-important" })
-await window.__DucklyAI.queryTasks({ status: "done", priority: "not-urgent-important" })
+await window.__MonkeyworkAI.queryTasks({})
+await window.__MonkeyworkAI.queryTasks({ status: "todo" })
+await window.__MonkeyworkAI.queryTasks({ priority: "urgent-important" })
+await window.__MonkeyworkAI.queryTasks({ status: "done", priority: "not-urgent-important" })
 ```
 
 **Parameters:**
@@ -57,11 +57,11 @@ await window.__DucklyAI.queryTasks({ status: "done", priority: "not-urgent-impor
 Create a new task.
 
 ```js
-await window.__DucklyAI.createTask({
+await window.__MonkeyworkAI.createTask({
   title: "Prepare quarterly report",
   description: "Gather Q2 data and create slides",
   priority: "urgent-important",
-  tags: ["产品需求"],
+  tags: ["Продукт"],
   startDate: "2026-07-29T09:00",
   dueDate: "2026-07-30T18:00",
   repeat: "none",
@@ -98,7 +98,7 @@ await window.__DucklyAI.createTask({
 Update an existing task. Only include fields you want to change.
 
 ```js
-await window.__DucklyAI.updateTask({
+await window.__MonkeyworkAI.updateTask({
   id: "task-uuid-here",
   title: "Updated title",
   status: "done",
@@ -122,7 +122,7 @@ await window.__DucklyAI.updateTask({
 Delete a task by ID.
 
 ```js
-await window.__DucklyAI.deleteTask({ id: "task-uuid-here" })
+await window.__MonkeyworkAI.deleteTask({ id: "task-uuid-here" })
 ```
 
 **Parameters:**
@@ -138,7 +138,7 @@ await window.__DucklyAI.deleteTask({ id: "task-uuid-here" })
 Get all tags.
 
 ```js
-await window.__DucklyAI.getTags()
+await window.__MonkeyworkAI.getTags()
 ```
 
 **Returns:** `{ id: string, name: string }[]`
@@ -147,7 +147,7 @@ await window.__DucklyAI.getTags()
 
 ## 2. `window.postMessage` JSON-RPC Channel
 
-Duckly also listens for JSON-RPC 2.0 messages via `window.postMessage`. This is useful for cross-origin AI agents (extensions, iframes, or other browser automation).
+Monkeywork also listens for JSON-RPC 2.0 messages via `window.postMessage`. This is useful for cross-origin AI agents (extensions, iframes, or other browser automation).
 
 ### Request Format
 
@@ -197,7 +197,7 @@ window.postMessage({
 // Listen for response
 window.addEventListener("message", (event) => {
   if (event.data?.jsonrpc === "2.0") {
-    console.log("Duckly AI response:", event.data);
+    console.log("Monkeywork AI response:", event.data);
   }
 });
 ```
@@ -218,14 +218,14 @@ window.addEventListener("message", (event) => {
 
 ## 4. Permission Model
 
-Duckly has two permission levels:
+Monkeywork has two permission levels:
 
 | Level | Allowed Methods |
 |-------|----------------|
 | `readonly` | `queryTasks`, `getTags` |
 | `readwrite` | All methods |
 
-The user controls permission in Duckly's Settings → AI Channel. When the AI channel is off, all methods return permission errors.
+The user controls permission in Monkeywork's Settings → AI Channel. When the AI channel is off, all methods return permission errors.
 
 ---
 
@@ -262,7 +262,7 @@ interface Tag {
 
 ## 6. Preset Tags
 
-Chinese: `技术开发, 产品需求, 个人成长, 日常事务`
+Russian: `Разработка, Срочное, Развитие, Рутина`
 English: `Tech, Product, Growth, Routine`
 
 When creating a task, you can use any string as a tag. These presets are shown in the UI for convenience.

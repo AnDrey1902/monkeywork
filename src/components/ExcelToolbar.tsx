@@ -37,18 +37,24 @@ export default function ExcelToolbar() {
 
   return (
     <div className="flex items-center gap-2">
-      <button onClick={handleExport} className="btn-duck bg-cartoon-warm text-cartoon-text text-sm">
+      <button
+        type="button"
+        onClick={handleExport}
+        className="btn-monkey bg-cartoon-warm text-cartoon-text text-sm"
+      >
         📥 {t("excel.export")}
       </button>
       <button
+        type="button"
         onClick={() => fileInputRef.current?.click()}
-        className="btn-duck bg-cartoon-warm text-cartoon-text text-sm"
+        className="btn-monkey bg-cartoon-warm text-cartoon-text text-sm"
       >
         📤 {t("excel.import")}
       </button>
       <button
+        type="button"
         onClick={downloadTemplate}
-        className="btn-duck bg-gray-100 text-cartoon-text/60 text-sm"
+        className="btn-monkey bg-gray-100 text-cartoon-text/60 text-sm"
       >
         📋 {t("excel.template")}
       </button>

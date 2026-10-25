@@ -1,5 +1,10 @@
 import { useEffect, useRef } from "react";
-import { fireWebhookAndLog, useNotificationStore } from "../stores/useNotificationStore";
+import { useI18n } from "../i18n/config";
+import {
+  fireWebhookAndLog,
+  type NotificationType,
+  useNotificationStore,
+} from "../stores/useNotificationStore";
 import { useTaskStore } from "../stores/useTaskStore";
 import { isDueToday, isDueTomorrow, isOverdue } from "../utils/date";
 import { playNotificationSound } from "../utils/sound";
@@ -8,6 +13,7 @@ const CHECK_INTERVAL = 60_000; // 60 seconds
 
 export function useReminder() {
   const notifiedRef = useRef<Set<string>>(new Set());
+  const { t } = useI18n();
 
   useEffect(() => {
     // Request notification permission on mount
@@ -28,7 +34,7 @@ export function useReminder() {
         const dedupKey = `${task.id}_${task.dueDate}`;
         if (notifiedRef.current.has(dedupKey)) continue;
 
-        let notifType: string | null = null;
+        let notifType: NotificationType | null = null;
         let isWebhookEvent = false;
 
         // 24h pre-reminder
@@ -52,13 +58,13 @@ export function useReminder() {
         if (!notifType) continue;
 
         // Skip if already notified (via persisted store)
-        if (ns.hasNotified(task.id, notifType as any)) {
+        if (ns.hasNotified(task.id, notifType)) {
           notifiedRef.current.add(dedupKey);
           continue;
         }
 
         // Add to notification history
-        ns.addNotification(task.id, task.title, notifType as any);
+        ns.addNotification(task.id, task.title, notifType);
         notifiedRef.current.add(dedupKey);
 
         // Desktop notification
@@ -67,13 +73,13 @@ export function useReminder() {
           "Notification" in window &&
           Notification.permission === "granted"
         ) {
-          const messages: Record<string, string> = {
-            deadline_approaching: `「${task.title}」due tomorrow`,
-            deadline_due: `「${task.title}」due today`,
-            deadline_overdue: `「${task.title}」overdue`,
+          const messages: Partial<Record<NotificationType, string>> = {
+            deadline_approaching: t("notif.deadlineApproaching").replace("{title}", task.title),
+            deadline_due: t("notif.dueToday").replace("{title}", task.title),
+            deadline_overdue: t("notif.overdue").replace("{title}", task.title),
           };
-          new Notification("Duckly", {
-            body: messages[notifType] || task.title,
+          new Notification("Monkeywork", {
+            body: messages[notifType] ?? task.title,
             icon: "/icons/android-chrome-192x192.png",
           });
         }
@@ -99,5 +105,5 @@ export function useReminder() {
     check();
     const timer = setInterval(check, CHECK_INTERVAL);
     return () => clearInterval(timer);
-  }, []);
+  }, [t]);
 }

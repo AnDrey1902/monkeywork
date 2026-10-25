@@ -89,7 +89,7 @@ function handleAIRequest(request: AIRequest): AIResponse {
 }
 
 /**
- * Execute an AI method directly (used by window.__DucklyAI).
+ * Execute an AI method directly (used by window.__MonkeyworkAI).
  * Returns the raw result data, or throws on error.
  */
 async function executeMethod(method: string, params: Record<string, unknown>): Promise<unknown> {
@@ -131,8 +131,8 @@ export function initAIChannel(): void {
   });
 
   // Expose global API for in-browser AI agents
-  if (typeof window !== "undefined" && !window.__DucklyAI) {
-    window.__DucklyAI = {
+  if (typeof window !== "undefined" && !window.__MonkeyworkAI) {
+    window.__MonkeyworkAI = {
       queryTasks: (params) =>
         executeMethod("queryTasks", params as Record<string, unknown>) as never,
       createTask: (params) =>
@@ -141,8 +141,7 @@ export function initAIChannel(): void {
         executeMethod("updateTask", params as Record<string, unknown>) as never,
       deleteTask: (params) =>
         executeMethod("deleteTask", params as Record<string, unknown>) as never,
-      getTags: () =>
-        executeMethod("getTags", {}) as never,
+      getTags: () => executeMethod("getTags", {}) as never,
     };
   }
 

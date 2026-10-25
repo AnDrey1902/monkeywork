@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react";
 import en from "./en.json";
-import zh from "./zh.json";
+import ru from "./ru.json";
 
-export type Locale = "zh" | "en";
+export type Locale = "ru" | "en";
 
 export const translations: Record<Locale, Record<string, string>> = {
-  zh,
+  ru,
   en,
 };
 
@@ -16,7 +16,7 @@ export interface I18nContextType {
 }
 
 export const I18nContext = createContext<I18nContextType>({
-  locale: "zh",
+  locale: "ru",
   setLocale: () => {},
   t: (key: string) => key,
 });

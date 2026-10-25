@@ -1,6 +1,6 @@
+import { PRIORITY_BG_COLORS } from "../constants";
 import type { Task } from "../db/schema";
 import { useI18n } from "../i18n/config";
-import { PRIORITY_BG_COLORS } from "../constants";
 
 interface DragOverlayContentProps {
   task: Task;
@@ -27,7 +27,7 @@ export default function DragOverlayContent({ task }: DragOverlayContentProps) {
           padding: "1px 6px",
         }}
       >
-        {t("priority." + task.priority + "_short")}
+        {t(`priority.${task.priority}_short`)}
       </span>
       <p
         style={{

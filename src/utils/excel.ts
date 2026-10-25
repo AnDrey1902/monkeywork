@@ -60,7 +60,7 @@ export function exportTasksToExcel(tasks: Task[]): void {
   ];
 
   XLSX.utils.book_append_sheet(wb, ws, "Tasks");
-  XLSX.writeFile(wb, `duckly-tasks-${new Date().toISOString().slice(0, 10)}.xlsx`);
+  XLSX.writeFile(wb, `monkeywork-tasks-${new Date().toISOString().slice(0, 10)}.xlsx`);
 }
 
 export function importTasksFromExcel(file: File): Promise<TaskCreate[]> {
@@ -118,5 +118,5 @@ export function downloadTemplate(): void {
   ];
 
   XLSX.utils.book_append_sheet(wb, ws, "Tasks");
-  XLSX.writeFile(wb, "duckly-template.xlsx");
+  XLSX.writeFile(wb, "monkeywork-template.xlsx");
 }

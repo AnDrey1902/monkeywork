@@ -138,13 +138,13 @@ async function migrateLegacyNotifications(
   db: import("../db/database").DatabaseClient,
 ): Promise<void> {
   try {
-    const legacyRaw = localStorage.getItem("duckly-notifications");
+    const legacyRaw = localStorage.getItem("monkeywork-notifications");
     if (!legacyRaw) return;
 
     const parsed = JSON.parse(legacyRaw);
     const legacyNotifs: Notification[] = parsed?.state?.notifications ?? [];
     if (legacyNotifs.length === 0) {
-      localStorage.removeItem("duckly-notifications");
+      localStorage.removeItem("monkeywork-notifications");
       return;
     }
 
@@ -158,7 +158,7 @@ async function migrateLegacyNotifications(
       });
     }
 
-    localStorage.removeItem("duckly-notifications");
+    localStorage.removeItem("monkeywork-notifications");
     console.log(`[notif] Migrated ${legacyNotifs.length} notifications to SQLite`);
   } catch (e) {
     console.warn("[notif] Legacy migration failed:", e);
@@ -316,11 +316,11 @@ export const useNotificationStore = create<NotificationState>()(
 
       testWebhook: async () => {
         const { settings } = get();
-        if (!settings.webhookUrl || !settings.webhookUrl.startsWith("http")) {
+        if (!settings.webhookUrl?.startsWith("http")) {
           return false;
         }
         const mockTask: Partial<Task> = {
-          title: "Test Notification from Duckly",
+          title: "Test Notification from Monkeywork",
           priority: "not-urgent-not-important",
         };
         const ok = await fireWebhook(settings.webhookUrl, "test", mockTask);
@@ -356,7 +356,7 @@ export const useNotificationStore = create<NotificationState>()(
       },
     }),
     {
-      name: "duckly-notifications",
+      name: "monkeywork-notifications",
       // Only persist settings (webhook config) to localStorage
       partialize: (state) => ({
         settings: state.settings,

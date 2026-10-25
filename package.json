@@ -1,5 +1,5 @@
 {
-  "name": "duckly",
+  "name": "monkeywork",
   "private": true,
   "type": "module",
   "version": "0.1.0",
@@ -9,10 +9,10 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "biome check .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
-    "@aptabase/react": "^0.4.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/utilities": "^3.2.2",
     "@sqlite.org/sqlite-wasm": "3.53.0-build1",
@@ -32,6 +32,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.0.0",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4.0.0",
     "typescript": "~6.0.0",
     "vite": "^8.0.0",

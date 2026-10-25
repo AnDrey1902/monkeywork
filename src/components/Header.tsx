@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useI18n } from "../i18n/config";
-import { useUIStore } from "../stores/useUIStore";
 import { useNotificationStore } from "../stores/useNotificationStore";
+import { useUIStore } from "../stores/useUIStore";
+import MonkeyLogo from "./MonkeyLogo";
 import NotificationPanel from "./NotificationPanel";
-import DuckLogo from "./DuckLogo";
 
 export default function Header() {
   const { t, locale, setLocale } = useI18n();
@@ -32,20 +32,21 @@ export default function Header() {
         {/* Left: Logo + Tabs */}
         <div className="header-left">
           <div className="logo-group">
-            <DuckLogo className="logo-icon" />
-            <h1 className="app-title">Duckly</h1>
+            <MonkeyLogo className="logo-icon" />
+            <h1 className="app-title">Monkeywork</h1>
           </div>
 
           {/* View tabs */}
           <div className="tab-bar" style={{ margin: 0 }}>
             {views.map((v) => (
               <button
+                type="button"
                 key={v.key}
                 className={`tab-btn ${viewMode === v.key ? "active" : ""}`}
                 onClick={() => setViewMode(v.key)}
               >
                 {v.key === "calendar" && (
-                  <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+                  <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <rect
                       x="3"
                       y="5"
@@ -68,7 +69,7 @@ export default function Header() {
                   </svg>
                 )}
                 {v.key === "quadrant" && (
-                  <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+                  <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <rect
                       x="3"
                       y="3"
@@ -108,7 +109,7 @@ export default function Header() {
                   </svg>
                 )}
                 {v.key === "list" && (
-                  <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+                  <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path
                       d="M4 6h16M4 12h16M4 18h16"
                       stroke="currentColor"
@@ -121,10 +122,34 @@ export default function Header() {
                   </svg>
                 )}
                 {v.key === "stats" && (
-                  <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
-                    <rect x="4" y="12" width="4" height="8" rx="1" fill="currentColor" opacity="0.7" />
-                    <rect x="10" y="8" width="4" height="12" rx="1" fill="currentColor" opacity="0.7" />
-                    <rect x="16" y="4" width="4" height="16" rx="1" fill="currentColor" opacity="0.7" />
+                  <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect
+                      x="4"
+                      y="12"
+                      width="4"
+                      height="8"
+                      rx="1"
+                      fill="currentColor"
+                      opacity="0.7"
+                    />
+                    <rect
+                      x="10"
+                      y="8"
+                      width="4"
+                      height="12"
+                      rx="1"
+                      fill="currentColor"
+                      opacity="0.7"
+                    />
+                    <rect
+                      x="16"
+                      y="4"
+                      width="4"
+                      height="16"
+                      rx="1"
+                      fill="currentColor"
+                      opacity="0.7"
+                    />
                   </svg>
                 )}
                 {v.label}
@@ -136,9 +161,18 @@ export default function Header() {
         {/* Right: Action buttons */}
         <div className="header-right">
           {/* Add task button */}
-          <button className="btn btn-primary btn-small" onClick={() => openTaskForm()}>
-            <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
-              <path d="M12 4v16M4 12h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <button
+            type="button"
+            className="btn btn-primary btn-small"
+            onClick={() => openTaskForm()}
+          >
+            <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M12 4v16M4 12h16"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             </svg>
             {t("header.newTask")}
           </button>
@@ -146,13 +180,14 @@ export default function Header() {
           {/* Language switcher */}
           <div style={{ position: "relative" }}>
             <button
+              type="button"
               className="dropdown-toggle"
               onClick={(e) => {
                 e.stopPropagation();
                 setShowLangMenu((v) => !v);
               }}
             >
-              <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
+              <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
                 <path
                   d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"
@@ -161,12 +196,13 @@ export default function Header() {
                 />
                 <path d="M4 12h16" stroke="currentColor" strokeWidth="2" />
               </svg>
-              {locale === "zh" ? "中文" : "EN"}
+              {locale === "ru" ? "Рус" : "EN"}
               <svg
                 className="icon"
                 viewBox="0 0 24 24"
                 fill="none"
                 style={{ width: 12, height: 12 }}
+                aria-hidden="true"
               >
                 <path
                   d="M6 9l6 6 6-6"
@@ -179,20 +215,27 @@ export default function Header() {
             </button>
             {showLangMenu && (
               <>
-                <div
-                  className="notif-backdrop"
-                  onClick={() => setShowLangMenu(false)}
-                />
+                {/* biome-ignore lint/a11y/noStaticElementInteractions: supplementary click target, menu closes by item selection */}
+                {/* biome-ignore lint/a11y/useKeyWithClickEvents: supplementary click target, menu closes by item selection */}
+                <div className="notif-backdrop" onClick={() => setShowLangMenu(false)} />
                 <div className="dropdown-menu" style={{ display: "block" }}>
                   <button
-                    className={`dropdown-item ${locale === "zh" ? "active" : ""}`}
-                    onClick={() => { setLocale("zh"); setShowLangMenu(false); }}
+                    type="button"
+                    className={`dropdown-item ${locale === "ru" ? "active" : ""}`}
+                    onClick={() => {
+                      setLocale("ru");
+                      setShowLangMenu(false);
+                    }}
                   >
-                    简体中文
+                    Русский
                   </button>
                   <button
+                    type="button"
                     className={`dropdown-item ${locale === "en" ? "active" : ""}`}
-                    onClick={() => { setLocale("en"); setShowLangMenu(false); }}
+                    onClick={() => {
+                      setLocale("en");
+                      setShowLangMenu(false);
+                    }}
                   >
                     English
                   </button>
@@ -204,6 +247,7 @@ export default function Header() {
           {/* Notification bell */}
           <div style={{ position: "relative" }}>
             <button
+              type="button"
               className="notif-btn"
               aria-label={t("notif.title")}
               onClick={(e) => {
@@ -211,7 +255,7 @@ export default function Header() {
                 toggleNotifications();
               }}
             >
-              <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+              <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
                   stroke="currentColor"
@@ -232,18 +276,22 @@ export default function Header() {
             </button>
             {showNotifications && (
               <>
-                <div
-                  className="notif-backdrop"
-                  onClick={closeNotifications}
-                />
+                {/* biome-ignore lint/a11y/noStaticElementInteractions: supplementary click target, panel closes by bell button */}
+                {/* biome-ignore lint/a11y/useKeyWithClickEvents: supplementary click target, panel closes by bell button */}
+                <div className="notif-backdrop" onClick={closeNotifications} />
                 <NotificationPanel />
               </>
             )}
           </div>
 
           {/* Settings button */}
-          <button className="settings-btn" onClick={toggleSettings} title={t("header.settings")}>
-            <svg className="icon icon-20" viewBox="0 0 24 24" fill="none">
+          <button
+            type="button"
+            className="settings-btn"
+            onClick={toggleSettings}
+            title={t("header.settings")}
+          >
+            <svg className="icon icon-20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
               <path
                 d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"

@@ -1,20 +1,22 @@
-import { AptabaseProvider } from "@aptabase/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import AppProvider from "./app";
 import "./globals.css";
 
-if (typeof localStorage !== "undefined" && localStorage.getItem("duckly-dark-mode") === "1") {
+if (typeof localStorage !== "undefined" && localStorage.getItem("monkeywork-dark-mode") === "1") {
   document.documentElement.classList.add("dark");
 }
 
-createRoot(document.getElementById("root")!).render(
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  throw new Error("Root element #root not found");
+}
+
+createRoot(rootElement).render(
   <StrictMode>
-    <AptabaseProvider appKey="A-US-9209452703">
-      <BrowserRouter>
-        <AppProvider />
-      </BrowserRouter>
-    </AptabaseProvider>
+    <BrowserRouter>
+      <AppProvider />
+    </BrowserRouter>
   </StrictMode>,
 );

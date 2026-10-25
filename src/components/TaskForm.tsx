@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Priority, RepeatType, TaskCreate } from "../db/schema";
 import { useI18n } from "../i18n/config";
 import { useTagStore } from "../stores/useTagStore";
@@ -11,22 +11,49 @@ export default function TaskForm() {
   const { showTaskForm, editingTaskId, closeTaskForm } = useUIStore();
   const { tasks, addTask, updateTask } = useTaskStore();
 
-  const PRIORITY_CONFIG = useMemo(() => [
-    { key: "urgent-important" as Priority, label: t("priority.urgent-important"), color: "coral", dotColor: "coral" },
-    { key: "not-urgent-important" as Priority, label: t("priority.not-urgent-important"), color: "blue", dotColor: "blue" },
-    { key: "urgent-not-important" as Priority, label: t("priority.urgent-not-important"), color: "yellow", dotColor: "yellow" },
-    { key: "not-urgent-not-important" as Priority, label: t("priority.not-urgent-not-important"), color: "cyan", dotColor: "cyan" },
-  ], [t]);
+  const PRIORITY_CONFIG = useMemo(
+    () => [
+      {
+        key: "urgent-important" as Priority,
+        label: t("priority.urgent-important"),
+        color: "coral",
+        dotColor: "coral",
+      },
+      {
+        key: "not-urgent-important" as Priority,
+        label: t("priority.not-urgent-important"),
+        color: "blue",
+        dotColor: "blue",
+      },
+      {
+        key: "urgent-not-important" as Priority,
+        label: t("priority.urgent-not-important"),
+        color: "yellow",
+        dotColor: "yellow",
+      },
+      {
+        key: "not-urgent-not-important" as Priority,
+        label: t("priority.not-urgent-not-important"),
+        color: "cyan",
+        dotColor: "cyan",
+      },
+    ],
+    [t],
+  );
 
-  const REPEAT_OPTIONS = useMemo(() => [
-    { value: "none" as RepeatType, label: t("repeat.none") },
-    { value: "daily" as RepeatType, label: t("repeat.daily") },
-    { value: "weekly" as RepeatType, label: t("repeat.weekly") },
-    { value: "monthly" as RepeatType, label: t("repeat.monthly") },
-  ], [t]);
+  const REPEAT_OPTIONS = useMemo(
+    () => [
+      { value: "none" as RepeatType, label: t("repeat.none") },
+      { value: "daily" as RepeatType, label: t("repeat.daily") },
+      { value: "weekly" as RepeatType, label: t("repeat.weekly") },
+      { value: "monthly" as RepeatType, label: t("repeat.monthly") },
+    ],
+    [t],
+  );
 
   const storeTags = useTagStore((s) => s.tags);
   const loadStoreTags = useTagStore((s) => s.loadTags);
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   // Load tags when form opens
   useEffect(() => {
@@ -35,7 +62,13 @@ export default function TaskForm() {
     }
   }, [showTaskForm, storeTags.length, loadStoreTags]);
 
-  const editingTask = editingTaskId ? tasks.find((t) => t.id === editingTaskId) : null;
+  // Focus the title input when the form opens (no autoFocus — a11y lint)
+  useEffect(() => {
+    if (showTaskForm) titleInputRef.current?.focus();
+  }, [showTaskForm]);
+
+  const editingTask =
+    showTaskForm && editingTaskId ? tasks.find((t) => t.id === editingTaskId) : null;
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -70,7 +103,7 @@ export default function TaskForm() {
       setStartDateError(false);
       setEndDateError(false);
     }
-  }, [editingTask, showTaskForm]);
+  }, [editingTask]);
 
   const toggleTag = (tagName: string) => {
     setSelectedTags((prev) =>
@@ -134,11 +167,13 @@ export default function TaskForm() {
       <form className="task-form" onSubmit={handleSubmit}>
         {/* Title */}
         <div>
-          <label>
+          <label htmlFor="tf-title">
             {t("task.name")}
             <span className="required-mark">*</span>
           </label>
           <input
+            id="tf-title"
+            ref={titleInputRef}
             type="text"
             value={title}
             onChange={(e) => {
@@ -147,17 +182,15 @@ export default function TaskForm() {
             }}
             className={`form-input${titleError ? " input-error" : ""}`}
             placeholder={t("task.namePlaceholder")}
-            autoFocus
           />
-          {titleError && (
-            <span className="field-error">{t("task.nameRequired")}</span>
-          )}
+          {titleError && <span className="field-error">{t("task.nameRequired")}</span>}
         </div>
 
         {/* Description */}
         <div>
-          <label>{t("task.description")}</label>
+          <label htmlFor="tf-description">{t("task.description")}</label>
           <textarea
+            id="tf-description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="form-input"
@@ -167,12 +200,13 @@ export default function TaskForm() {
 
         {/* Priority Quadrant Buttons */}
         <div>
-          <label>{t("task.quadrant")}</label>
+          <span className="group-label">{t("task.quadrant")}</span>
           <div className="priority-group">
             {PRIORITY_CONFIG.map((p) => (
               <button
                 key={p.key}
                 type="button"
+                aria-pressed={priority === p.key}
                 className={`priority-btn ${p.color}${priority === p.key ? " active" : ""}`}
                 onClick={() => setPriority(p.key)}
               >
@@ -185,12 +219,13 @@ export default function TaskForm() {
 
         {/* Time Range */}
         <div>
-          <label>
+          <label htmlFor="tf-start">
             {t("task.timeRange")}
             <span className="required-mark">*</span>
           </label>
           <div className="task-time-range">
             <input
+              id="tf-start"
               className={`form-input${startDateError ? " input-error" : ""}`}
               type="datetime-local"
               value={startDate}
@@ -201,6 +236,7 @@ export default function TaskForm() {
             />
             <span className="time-range-sep">{t("task.to")}</span>
             <input
+              id="tf-end"
               className={`form-input${endDateError ? " input-error" : ""}`}
               type="datetime-local"
               value={endDate}
@@ -210,18 +246,15 @@ export default function TaskForm() {
               }}
             />
           </div>
-          {startDateError && (
-            <span className="field-error">{t("task.startDateRequired")}</span>
-          )}
-          {endDateError && (
-            <span className="field-error">{t("task.endDateRequired")}</span>
-          )}
+          {startDateError && <span className="field-error">{t("task.startDateRequired")}</span>}
+          {endDateError && <span className="field-error">{t("task.endDateRequired")}</span>}
         </div>
 
         {/* Repeat */}
         <div>
-          <label>{t("task.repeat")}</label>
+          <label htmlFor="tf-repeat">{t("task.repeat")}</label>
           <select
+            id="tf-repeat"
             value={repeat}
             onChange={(e) => setRepeat(e.target.value as RepeatType)}
             className="form-input"
@@ -236,21 +269,26 @@ export default function TaskForm() {
 
         {/* Tag Selector */}
         <div>
-          <label>{t("task.tags")}</label>
+          <span className="group-label">{t("task.tags")}</span>
           <div className="tag-select">
-            {storeTags.map((tag) => (
-              <span
-                key={tag.id}
-                className={`tag tag-pill${selectedTags.includes(tag.name) ? " active" : ""}`}
-                style={{
-                  background: selectedTags.includes(tag.name) ? tag.color : "transparent",
-                  cursor: "pointer",
-                }}
-                onClick={() => toggleTag(tag.name)}
-              >
-                {tag.name}
-              </span>
-            ))}
+            {storeTags.map((tag) => {
+              const active = selectedTags.includes(tag.name);
+              return (
+                <button
+                  key={tag.id}
+                  type="button"
+                  aria-pressed={active}
+                  className={`tag tag-pill${active ? " active" : ""}`}
+                  style={{
+                    background: active ? tag.color : "transparent",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => toggleTag(tag.name)}
+                >
+                  {tag.name}
+                </button>
+              );
+            })}
           </div>
         </div>
 

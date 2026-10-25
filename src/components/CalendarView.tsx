@@ -1,8 +1,9 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Task } from "../db/schema";
+import { useI18n } from "../i18n/config";
 import { useTaskStore } from "../stores/useTaskStore";
 import { useUIStore } from "../stores/useUIStore";
-import { useI18n } from "../i18n/config";
+import { handleActivate } from "../utils/a11y";
 
 type CalendarMode = "month" | "week" | "day" | "year";
 
@@ -161,11 +162,18 @@ export default function CalendarView() {
 
   const multiDayEvents = useMemo(() => deriveMultiDayEvents(tasks), [tasks]);
   const today = useMemo(() => new Date(), []);
-  const weekdaysShort = useMemo(() => [
-    t("calendar.weekday.sun"), t("calendar.weekday.mon"), t("calendar.weekday.tue"),
-    t("calendar.weekday.wed"), t("calendar.weekday.thu"), t("calendar.weekday.fri"),
-    t("calendar.weekday.sat"),
-  ], [t]);
+  const weekdaysShort = useMemo(
+    () => [
+      t("calendar.weekday.sun"),
+      t("calendar.weekday.mon"),
+      t("calendar.weekday.tue"),
+      t("calendar.weekday.wed"),
+      t("calendar.weekday.thu"),
+      t("calendar.weekday.fri"),
+      t("calendar.weekday.sat"),
+    ],
+    [t],
+  );
   const weekdaysFull = useMemo(() => t("calendar.weekdayFull").split(","), [t]);
   const monthsCn = useMemo(() => t("calendar.monthNames").split(","), [t]);
 
@@ -233,7 +241,9 @@ export default function CalendarView() {
     if (mode !== "month" || !gridRef.current) return;
     const grid = gridRef.current;
     // Remove old overlays and reset task container margins
-    grid.querySelectorAll(".cal-multi-overlay").forEach((el) => el.remove());
+    grid.querySelectorAll(".cal-multi-overlay").forEach((el) => {
+      el.remove();
+    });
     grid.querySelectorAll(".calendar-cell").forEach((c) => {
       const tc = c.querySelector(".calendar-cell-tasks");
       if (tc) (tc as HTMLElement).style.marginTop = "";
@@ -266,12 +276,14 @@ export default function CalendarView() {
 
       // Find start and end cell indices within the visible month
       const findDayCell = (d: Date) =>
-        cells.findIndex(
-          (c) =>
-            c.querySelector(".calendar-day-number") &&
-            parseInt(c.querySelector(".calendar-day-number")!.textContent || "0") === d.getDate() &&
-            !c.classList.contains("other-month"),
-        );
+        cells.findIndex((c) => {
+          const dayNumber = c.querySelector(".calendar-day-number");
+          return (
+            dayNumber !== null &&
+            Number.parseInt(dayNumber.textContent || "0", 10) === d.getDate() &&
+            !c.classList.contains("other-month")
+          );
+        });
       const startIdx = findDayCell(visibleStart);
       const endIdx = findDayCell(visibleEnd);
       if (startIdx === -1 || endIdx === -1 || startIdx > endIdx) return;
@@ -315,14 +327,14 @@ export default function CalendarView() {
     // Push task containers below the overlay stack
     Object.entries(rowStack).forEach(([rowIdx, count]) => {
       const taskOffset = DAY_NUM_HEIGHT + Math.min(count, 3) * 24;
-      const start = parseInt(rowIdx) * 7;
+      const start = Number.parseInt(rowIdx, 10) * 7;
       const end = Math.min(start + 7, cells.length);
       for (let i = start; i < end; i++) {
         const tc = cells[i].querySelector(".calendar-cell-tasks");
         if (tc) (tc as HTMLElement).style.marginTop = `${taskOffset}px`;
       }
     });
-  }, [mode, currentDate, tasks]);
+  }, [mode, currentDate, multiDayEvents]);
 
   // ── Year view data ──
   const yearMonths = useMemo(() => {
@@ -365,8 +377,8 @@ export default function CalendarView() {
         {/* Calendar Header */}
         <div className="calendar-header">
           <div className="calendar-nav">
-            <button className="calendar-nav-btn" onClick={() => navigate(-1)}>
-              <svg className="icon icon-20" viewBox="0 0 24 24" fill="none">
+            <button type="button" className="calendar-nav-btn" onClick={() => navigate(-1)}>
+              <svg className="icon icon-20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M15 18l-6-6 6-6"
                   stroke="currentColor"
@@ -381,8 +393,8 @@ export default function CalendarView() {
                 ? `${currentDate.getFullYear()}${t("date.year")}`
                 : `${currentDate.getFullYear()}${t("date.year")} ${monthsCn[currentDate.getMonth()]}`}
             </span>
-            <button className="calendar-nav-btn" onClick={() => navigate(1)}>
-              <svg className="icon icon-20" viewBox="0 0 24 24" fill="none">
+            <button type="button" className="calendar-nav-btn" onClick={() => navigate(1)}>
+              <svg className="icon icon-20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M9 6l6 6-6 6"
                   stroke="currentColor"
@@ -392,8 +404,8 @@ export default function CalendarView() {
                 />
               </svg>
             </button>
-            <button className="calendar-today-btn" onClick={goToToday}>
-              <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
+            <button type="button" className="calendar-today-btn" onClick={goToToday}>
+              <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
                 <rect x="10" y="6" width="4" height="12" rx="1" fill="currentColor" opacity="0.6" />
                 <rect x="6" y="10" width="12" height="4" rx="1" fill="currentColor" opacity="0.6" />
@@ -406,12 +418,13 @@ export default function CalendarView() {
           <div className="tab-bar" style={{ margin: 0 }}>
             {(["month", "week", "day", "year"] as CalendarMode[]).map((m) => (
               <button
+                type="button"
                 key={m}
                 className={`tab-btn ${mode === m ? "active" : ""}`}
                 onClick={() => setMode(m)}
               >
                 {m === "month" && (
-                  <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
+                  <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <rect
                       x="3"
                       y="5"
@@ -431,7 +444,7 @@ export default function CalendarView() {
                   </svg>
                 )}
                 {m === "week" && (
-                  <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
+                  <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <rect
                       x="3"
                       y="5"
@@ -457,7 +470,7 @@ export default function CalendarView() {
                   </svg>
                 )}
                 {m === "day" && (
-                  <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
+                  <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <rect
                       x="3"
                       y="5"
@@ -483,7 +496,7 @@ export default function CalendarView() {
                   </svg>
                 )}
                 {m === "year" && (
-                  <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
+                  <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <rect
                       x="3"
                       y="3"
@@ -497,7 +510,7 @@ export default function CalendarView() {
                     <path d="M9 3v18M15 3v18" stroke="currentColor" strokeWidth="1.5" />
                   </svg>
                 )}
-                {t("calendar." + m)}
+                {t(`calendar.${m}`)}
               </button>
             ))}
           </div>
@@ -521,10 +534,15 @@ export default function CalendarView() {
                   const isSelectedDate = selectedDate && isSameDay(d, selectedDate);
 
                   return (
+                    /* biome-ignore lint/a11y/useSemanticElements: grid cell with nested content, keyboard activation via onKeyDown */
                     <div
                       key={dateKey}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={dateKey}
                       className={`calendar-cell${isOtherMonth ? " other-month" : ""}${isTodayDate ? " today" : ""}${isSelectedDate ? " selected" : ""}${dayTasks.length > 0 ? " has-task" : ""}`}
                       onClick={() => setSelectedDate(new Date(d))}
+                      onKeyDown={handleActivate(() => setSelectedDate(new Date(d)))}
                     >
                       <div className="calendar-day-number">{d.getDate()}</div>
                       {dayTasks.length > 0 && (
@@ -541,7 +559,9 @@ export default function CalendarView() {
                             </div>
                           ))}
                           {dayTasks.length > 3 && (
-                            <div className="cal-more-link">+{dayTasks.length - 3} {t("calendar.more")}</div>
+                            <div className="cal-more-link">
+                              +{dayTasks.length - 3} {t("calendar.more")}
+                            </div>
                           )}
                         </div>
                       )}
@@ -583,19 +603,29 @@ export default function CalendarView() {
                     className={`week-multi-bar ${ev.color}${ev.done ? " done" : ""}`}
                   >
                     <svg className="dm-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <rect x="4" y="6" width="16" height="14" rx="2" stroke="currentColor" strokeWidth="2"/>
-                      <path d="M4 12h16" stroke="currentColor" strokeWidth="2"/>
+                      <rect
+                        x="4"
+                        y="6"
+                        width="16"
+                        height="14"
+                        rx="2"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+                      <path d="M4 12h16" stroke="currentColor" strokeWidth="2" />
                     </svg>
                     {ev.text}
-                    <span className="wm-range">{ev.start} ~ {ev.end}</span>
+                    <span className="wm-range">
+                      {ev.start} ~ {ev.end}
+                    </span>
                   </div>
                 ))}
             </div>
             <div className="week-grid">
               <div className="week-time-cell" style={{ background: "var(--bg-page)" }} />
-              {weekDays.map((d, i) => (
+              {weekDays.map((d) => (
                 <div
-                  key={i}
+                  key={d.toDateString()}
                   className={`week-day-header${d.getDay() === 0 || d.getDay() >= 6 ? " weekend" : ""}${isSameDay(d, today) ? " today" : ""}`}
                 >
                   <div className="wd-name">{weekdaysShort[d.getDay()]}</div>
@@ -604,15 +634,13 @@ export default function CalendarView() {
               ))}
               {Array.from({ length: 17 }, (_, h) => h + 6).map((h) => (
                 <Fragment key={`row-${h}`}>
-                  <div className="week-time-cell">
-                    {h}:00
-                  </div>
-                  {weekDays.map((d, di) => {
+                  <div className="week-time-cell">{h}:00</div>
+                  {weekDays.map((d) => {
                     const dateKey = formatDateKey(d.getFullYear(), d.getMonth(), d.getDate());
                     const dayTasks = getSingleDayTasks(tasks, dateKey);
                     return (
                       <div
-                        key={`c-${h}-${di}`}
+                        key={`c-${h}-${d.toDateString()}`}
                         className={`week-day-col${isSameDay(d, today) ? " today-col" : ""}`}
                       >
                         {h === 6 &&
@@ -647,29 +675,37 @@ export default function CalendarView() {
                   return day >= s && day <= e;
                 })
                 .map((ev) => (
-                  <div
-                    key={ev.id}
-                    className={`day-multi-bar ${ev.color}${ev.done ? " done" : ""}`}
-                  >
+                  <div key={ev.id} className={`day-multi-bar ${ev.color}${ev.done ? " done" : ""}`}>
                     <svg className="dm-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <rect x="4" y="6" width="16" height="14" rx="2" stroke="currentColor" strokeWidth="2"/>
-                      <path d="M4 12h16" stroke="currentColor" strokeWidth="2"/>
-                      <path d="M8 10v4M16 10v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      <rect
+                        x="4"
+                        y="6"
+                        width="16"
+                        height="14"
+                        rx="2"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+                      <path d="M4 12h16" stroke="currentColor" strokeWidth="2" />
+                      <path
+                        d="M8 10v4M16 10v4"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
                     </svg>
                     {ev.text}
-                    <span className="dm-range">{ev.start} ~ {ev.end}</span>
+                    <span className="dm-range">
+                      {ev.start} ~ {ev.end}
+                    </span>
                   </div>
                 ))}
             </div>
             <div className="day-timeline">
               {Array.from({ length: 17 }, (_, i) => i + 6).map((h) => (
                 <Fragment key={`day-${h}`}>
-                  <div className="day-hour-label">
-                    {h}:00
-                  </div>
-                  <div
-                    className={`day-hour-cell${h === today.getHours() ? " current" : ""}`}
-                  >
+                  <div className="day-hour-label">{h}:00</div>
+                  <div className={`day-hour-cell${h === today.getHours() ? " current" : ""}`}>
                     {h === 6 &&
                       selectedTasks.slice(0, 2).map((task) => (
                         <div
@@ -684,7 +720,14 @@ export default function CalendarView() {
                               background: `var(--${getPriorityColor(task) === "coral" ? "coral" : getPriorityColor(task) === "blue" ? "blue" : getPriorityColor(task) === "yellow" ? "yellow" : "cyan"})`,
                             }}
                           >
-                            {{ coral: t("priority.urgent"), blue: t("priority.important"), yellow: t("priority.inProgress"), cyan: t("priority.daily") }[getPriorityColor(task)]}
+                            {
+                              {
+                                coral: t("priority.urgent"),
+                                blue: t("priority.important"),
+                                yellow: t("priority.inProgress"),
+                                cyan: t("priority.daily"),
+                              }[getPriorityColor(task)]
+                            }
                           </span>
                         </div>
                       ))}
@@ -706,27 +749,41 @@ export default function CalendarView() {
                 }, 0);
 
                 return (
+                  /* biome-ignore lint/a11y/useSemanticElements: card with nested content, keyboard activation via onKeyDown */
                   <div
                     key={m}
+                    role="button"
+                    tabIndex={0}
                     className="year-month-card"
                     onClick={() => {
                       const d = new Date(currentDate.getFullYear(), m, 1);
                       setCurrentDate(d);
                       setMode("month");
                     }}
+                    onKeyDown={handleActivate(() => {
+                      const d = new Date(currentDate.getFullYear(), m, 1);
+                      setCurrentDate(d);
+                      setMode("month");
+                    })}
                   >
                     <div className="year-month-title">{monthsCn[m]}</div>
                     <div className="year-month-weekdays">
                       {weekdaysShort.map((wd, i) => (
-                        <span key={wd} className={`year-month-weekday${i === 0 || i >= 6 ? " weekend" : ""}`}>
+                        <span
+                          key={wd}
+                          className={`year-month-weekday${i === 0 || i >= 6 ? " weekend" : ""}`}
+                        >
                           {wd}
                         </span>
                       ))}
                     </div>
                     <div className="year-month-days">
-                      {Array.from({ length: firstDay }, (_, i) => (
-                        <div key={`p-${i}`} className="year-month-day other-month">
-                          {daysInPrev - firstDay + 1 + i}
+                      {Array.from(
+                        { length: firstDay },
+                        (_, i) => daysInPrev - firstDay + 1 + i,
+                      ).map((dayNum) => (
+                        <div key={dayNum} className="year-month-day other-month">
+                          {dayNum}
                         </div>
                       ))}
                       {days.map((d) => {
@@ -774,7 +831,8 @@ function CalendarSidebar({
   tasksCount: number;
   onAddTask?: () => void;
 }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const intlLocale = locale === "ru" ? "ru-RU" : "en-US";
   const overdueCount = selectedTasks.filter((task) => {
     if (!task.dueDate) return false;
     return new Date(task.dueDate) < new Date();
@@ -784,7 +842,7 @@ function CalendarSidebar({
       {/* Selected date info */}
       <div className="cal-sidebar-card">
         <div className="cal-sidebar-title">
-          <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+          <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
             <path d="M3 10h18" stroke="currentColor" strokeWidth="2" />
             <path d="M8 3v4M16 3v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -796,7 +854,7 @@ function CalendarSidebar({
             {t("calendar.tasksCount").replace("{count}", String(tasksCount))}
           </span>
           <span className="cal-sidebar-task-tag" style={{ background: "var(--yellow)" }}>
-            {overdueCount}{t("calendar.deadline")}
+            {t("calendar.deadlineCount").replace("{count}", String(overdueCount))}
           </span>
         </div>
       </div>
@@ -804,7 +862,7 @@ function CalendarSidebar({
       {/* Tasks */}
       <div className="cal-sidebar-card">
         <div className="cal-sidebar-title">
-          <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+          <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
               d="M4 6h16M4 12h16M4 18h16"
               stroke="currentColor"
@@ -822,6 +880,8 @@ function CalendarSidebar({
         ) : (
           selectedTasks.map((task) => {
             const color = getPriorityColorClass(task.priority);
+            const start = task.startDate;
+            const end = task.dueDate;
             return (
               <div
                 key={task.id}
@@ -829,15 +889,36 @@ function CalendarSidebar({
                 style={{ opacity: task.status === "done" ? 0.6 : 1 }}
               >
                 <span className="cal-sidebar-time" style={{ lineHeight: 1.4 }}>
-                  {isMultiDayEvent(task)
-                    ? <>
-                        {new Date(task.startDate!).toLocaleDateString("zh-CN", { month: "numeric", day: "numeric" })} {new Date(task.startDate!).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}
-                        <br />
-                        {new Date(task.dueDate!).toLocaleDateString("zh-CN", { month: "numeric", day: "numeric" })} {new Date(task.dueDate!).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}
-                      </>
-                    : task.dueDate
-                      ? new Date(task.dueDate).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })
-                      : t("calendar.allDay")}
+                  {start &&
+                  end &&
+                  new Date(start).toDateString() !== new Date(end).toDateString() ? (
+                    <>
+                      {new Date(start).toLocaleDateString(intlLocale, {
+                        month: "numeric",
+                        day: "numeric",
+                      })}{" "}
+                      {new Date(start).toLocaleTimeString(intlLocale, {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                      <br />
+                      {new Date(end).toLocaleDateString(intlLocale, {
+                        month: "numeric",
+                        day: "numeric",
+                      })}{" "}
+                      {new Date(end).toLocaleTimeString(intlLocale, {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </>
+                  ) : end ? (
+                    new Date(end).toLocaleTimeString(intlLocale, {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  ) : (
+                    t("calendar.allDay")
+                  )}
                 </span>
                 <div className="cal-sidebar-task-info">
                   <div
@@ -850,7 +931,14 @@ function CalendarSidebar({
                     className="cal-sidebar-task-tag"
                     style={{ background: `var(--${color})`, borderColor: "var(--dark-gray)" }}
                   >
-                    {{ coral: t("priority.urgent"), blue: t("priority.important"), yellow: t("priority.inProgress"), cyan: t("priority.daily") }[color]}
+                    {
+                      {
+                        coral: t("priority.urgent"),
+                        blue: t("priority.important"),
+                        yellow: t("priority.inProgress"),
+                        cyan: t("priority.daily"),
+                      }[color]
+                    }
                   </span>
                 </div>
               </div>
@@ -859,11 +947,12 @@ function CalendarSidebar({
         )}
 
         <button
+          type="button"
           className="btn btn-small"
           style={{ width: "100%", marginTop: "var(--space-3)", justifyContent: "center" }}
           onClick={onAddTask}
         >
-          <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
+          <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
               d="M12 4v16M4 12h16"
               stroke="currentColor"
@@ -878,7 +967,7 @@ function CalendarSidebar({
       {/* Quick filter */}
       <div className="cal-sidebar-card">
         <div className="cal-sidebar-title">
-          <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+          <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
               d="M4 7h16M7 12h10M10 17h4"
               stroke="currentColor"

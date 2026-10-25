@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import Modal from "./Modal";
 import { useI18n } from "../i18n/config";
+import Modal from "./Modal";
 
 export type ConfirmVariant = "danger" | "warning" | "info";
 
@@ -31,7 +31,13 @@ function VariantIcon({ variant }: { variant: ConfirmVariant }) {
   const color = VARIANT_ICON_COLOR[variant];
   if (variant === "danger") {
     return (
-      <svg className="icon icon-24" viewBox="0 0 24 24" fill="none" style={{ color }}>
+      <svg
+        className="icon icon-24"
+        viewBox="0 0 24 24"
+        fill="none"
+        style={{ color }}
+        aria-hidden="true"
+      >
         <path
           d="M5 7h14M10 7V4h4v3M6 7v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7"
           stroke="currentColor"
@@ -44,13 +50,14 @@ function VariantIcon({ variant }: { variant: ConfirmVariant }) {
   }
   if (variant === "warning") {
     return (
-      <svg className="icon icon-24" viewBox="0 0 24 24" fill="none" style={{ color }}>
-        <path
-          d="M12 9v4M12 17h0"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
+      <svg
+        className="icon icon-24"
+        viewBox="0 0 24 24"
+        fill="none"
+        style={{ color }}
+        aria-hidden="true"
+      >
+        <path d="M12 9v4M12 17h0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         <path
           d="M10.29 3.86l-8.1 14c-.6 1.04.15 2.14 1.21 2.14h16.2c1.06 0 1.81-1.1 1.21-2.14l-8.1-14c-.6-1.04-1.82-1.04-2.42 0z"
           stroke="currentColor"
@@ -62,7 +69,13 @@ function VariantIcon({ variant }: { variant: ConfirmVariant }) {
     );
   }
   return (
-    <svg className="icon icon-24" viewBox="0 0 24 24" fill="none" style={{ color }}>
+    <svg
+      className="icon icon-24"
+      viewBox="0 0 24 24"
+      fill="none"
+      style={{ color }}
+      aria-hidden="true"
+    >
       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
       <path d="M12 8v4M12 16h0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
@@ -137,10 +150,11 @@ export default function ConfirmDialog({
           </p>
         </div>
         <div style={{ display: "flex", gap: "var(--space-2)", justifyContent: "flex-end" }}>
-          <button className="btn btn-small" onClick={onClose}>
+          <button type="button" className="btn btn-small" onClick={onClose}>
             {resolvedCancelText}
           </button>
           <button
+            type="button"
             ref={confirmRef}
             className={`btn btn-small ${variantClass}`}
             onClick={onConfirm}

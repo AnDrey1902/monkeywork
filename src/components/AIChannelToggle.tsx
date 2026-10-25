@@ -22,6 +22,7 @@ export default function AIChannelToggle() {
     <div className="flex items-center gap-2 text-sm">
       <span className="text-cartoon-text/50">{t("ai.title")}</span>
       <button
+        type="button"
         onClick={handleToggle}
         className={`relative w-10 h-5 rounded-full transition-colors ${
           aiChannelOpen ? "bg-cartoon-mint" : "bg-gray-200"

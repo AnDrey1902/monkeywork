@@ -17,7 +17,7 @@ export interface AIResponse {
 
 export type AIPermission = "readonly" | "readwrite";
 
-export interface DucklyAI {
+export interface MonkeyworkAI {
   queryTasks: (params: { status?: string; priority?: string }) => Promise<unknown>;
   createTask: (params: Record<string, unknown>) => Promise<unknown>;
   updateTask: (params: Record<string, unknown>) => Promise<unknown>;
@@ -27,6 +27,6 @@ export interface DucklyAI {
 
 declare global {
   interface Window {
-    __DucklyAI?: DucklyAI;
+    __MonkeyworkAI?: MonkeyworkAI;
   }
 }

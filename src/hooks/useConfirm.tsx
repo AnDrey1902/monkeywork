@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
-import { useI18n } from "../i18n/config";
 import ConfirmDialog, { type ConfirmVariant } from "../components/ConfirmDialog";
+import { useI18n } from "../i18n/config";
 
 export interface ConfirmOptions {
   title?: string;

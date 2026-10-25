@@ -1,5 +1,4 @@
-import { useCallback } from "react";
-import { useSyncExternalStore } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 export type ToastType = "success" | "error" | "warning";
 
@@ -14,7 +13,7 @@ const listeners = new Set<() => void>();
 let nextId = 1;
 
 function emitChange() {
-  listeners.forEach((l) => l());
+  for (const listener of listeners) listener();
 }
 
 function subscribe(listener: () => void) {

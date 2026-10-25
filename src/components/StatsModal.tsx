@@ -27,14 +27,19 @@ export default function StatsModal() {
   const maxCount = Math.max(...Object.values(quadrantCounts), 1);
 
   return (
-    <Modal isOpen={showStatsModal} onClose={() => setShowStatsModal(false)} title={t("stats.title")}>
+    <Modal
+      isOpen={showStatsModal}
+      onClose={() => setShowStatsModal(false)}
+      title={t("stats.title")}
+    >
       {/* Tabs */}
       <div className="tab-bar">
         <button
+          type="button"
           className={`tab-btn ${tab === "chart" ? "active" : ""}`}
           onClick={() => setTab("chart")}
         >
-          <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
+          <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <rect x="4" y="8" width="4" height="12" rx="1" fill="currentColor" opacity="0.7" />
             <rect x="10" y="4" width="4" height="16" rx="1" fill="currentColor" opacity="0.7" />
             <rect x="16" y="6" width="4" height="14" rx="1" fill="currentColor" opacity="0.7" />
@@ -42,10 +47,11 @@ export default function StatsModal() {
           {t("stats.chart")}
         </button>
         <button
+          type="button"
           className={`tab-btn ${tab === "list" ? "active" : ""}`}
           onClick={() => setTab("list")}
         >
-          <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
+          <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
               d="M4 6h16M4 12h16M4 18h16"
               stroke="currentColor"
@@ -171,6 +177,7 @@ export default function StatsModal() {
               viewBox="0 0 24 24"
               fill="none"
               style={{ width: 64, height: 64 }}
+              aria-hidden="true"
             >
               <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
               <path
@@ -225,7 +232,7 @@ export default function StatsModal() {
                   <td style={{ padding: "var(--space-2) var(--space-3)" }}>{task.title}</td>
                   <td style={{ padding: "var(--space-2) var(--space-3)" }}>
                     <span className="tag" style={{ fontSize: 10, padding: "1px 6px" }}>
-                      {t("priority." + task.priority + "_short")}
+                      {t(`priority.${task.priority}_short`)}
                     </span>
                   </td>
                   <td style={{ padding: "var(--space-2) var(--space-3)" }}>

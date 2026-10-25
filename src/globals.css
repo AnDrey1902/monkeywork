@@ -43,13 +43,13 @@
   /* Brand mark colors stay fixed so the logo reads the same in dark mode */
   --logo-ink: #1e1a11;
   --logo-white: #fffdf8;
-  --logo-body: #ffe769;
-  --logo-beak: #fc6c6b;
+  --logo-body: #cd8c52;
+  --logo-face: #f7dcb8;
   --success: #1f8a76;
 
   /* Font */
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-  --font-display: "Archivo Black", "Inter", -apple-system, "PingFang SC", sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Montserrat", "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "Monaco", "Courier New", monospace;
 
   /* Spacing (4px base) */
@@ -178,9 +178,13 @@ body {
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z' fill='%23FC6C6B' fill-opacity='.35'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='16' height='16' rx='3' transform='rotate(45 8 8)' fill='%239B8AE6' fill-opacity='.3'/%3E%3C/svg%3E");
-  background-position: 3% 14%, 96% 22%;
+  background-position:
+    3% 14%,
+    96% 22%;
   background-repeat: no-repeat;
-  background-size: 26px 26px, 16px 16px;
+  background-size:
+    26px 26px,
+    16px 16px;
   background-attachment: fixed;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -202,7 +206,9 @@ body {
   *,
   *::before,
   *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: a11y — must override any animation for reduced motion */
     transition: none !important;
+    /* biome-ignore lint/complexity/noImportantStyles: a11y — must override any animation for reduced motion */
     animation: none !important;
   }
 }
@@ -653,6 +659,13 @@ body {
 }
 
 /* ── Tags ── */
+button.tag {
+  appearance: none;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+}
+
 .tag {
   display: inline-flex;
   align-items: center;
@@ -1955,6 +1968,7 @@ body {
 }
 
 /* ── Icons ── */
+/* biome-ignore lint/style/noDescendingSpecificity: base icon utility intentionally precedes its contextual overrides */
 .icon {
   display: inline-flex;
   align-items: center;
@@ -2186,6 +2200,12 @@ body {
   font-weight: 600;
 }
 
+/* a11y: native checkbox styled as switch */
+input.drawer-toggle {
+  appearance: none;
+  margin: 0;
+}
+
 .drawer-toggle {
   width: 40px;
   height: 22px;
@@ -2359,6 +2379,16 @@ body {
   text-decoration-thickness: 2px;
 }
 
+/* a11y: item converted from div to button */
+button.notif-item {
+  appearance: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+}
+
 .notif-item {
   display: flex;
   align-items: flex-start;
@@ -2454,7 +2484,8 @@ body {
   min-width: 180px;
 }
 
-.task-form label {
+.task-form label,
+.task-form .group-label {
   display: block;
   font-size: 11px;
   font-weight: 800;
@@ -2477,6 +2508,7 @@ body {
 }
 
 .task-form .input-error {
+  /* biome-ignore lint/complexity/noImportantStyles: must override form-input base border in both themes */
   border-color: var(--coral) !important;
   box-shadow: 0 0 0 1px var(--coral);
 }

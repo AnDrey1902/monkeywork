@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
 type ViewMode = "calendar" | "quadrant" | "list" | "stats";
-type DuckMood = "happy" | "neutral" | "sad";
+type MascotMood = "happy" | "neutral" | "sad";
 type AIPermission = "off" | "readonly" | "readwrite";
 type CalendarMode = "month" | "week" | "day" | "year";
 
 interface UIState {
   viewMode: ViewMode;
-  duckMood: DuckMood;
+  mascotMood: MascotMood;
   showTaskForm: boolean;
   editingTaskId: string | null;
   showSettings: boolean;
@@ -23,7 +23,7 @@ interface UIState {
 
   // Actions
   setViewMode: (mode: ViewMode) => void;
-  setDuckMood: (mood: DuckMood) => void;
+  setMascotMood: (mood: MascotMood) => void;
   openTaskForm: (editingId?: string) => void;
   closeTaskForm: () => void;
   toggleSettings: () => void;
@@ -40,11 +40,11 @@ interface UIState {
 }
 
 const savedDarkMode =
-  typeof localStorage !== "undefined" && localStorage.getItem("duckly-dark-mode") === "1";
+  typeof localStorage !== "undefined" && localStorage.getItem("monkeywork-dark-mode") === "1";
 
 export const useUIStore = create<UIState>((set) => ({
   viewMode: "calendar",
-  duckMood: "neutral",
+  mascotMood: "neutral",
   showTaskForm: false,
   editingTaskId: null,
   showSettings: false,
@@ -60,7 +60,7 @@ export const useUIStore = create<UIState>((set) => ({
 
   setViewMode: (mode) => set({ viewMode: mode }),
 
-  setDuckMood: (mood) => set({ duckMood: mood }),
+  setMascotMood: (mood) => set({ mascotMood: mood }),
 
   openTaskForm: (editingId) => set({ showTaskForm: true, editingTaskId: editingId ?? null }),
 

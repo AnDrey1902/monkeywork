@@ -44,7 +44,7 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          VITE_BASE_URL: /duckly/
+          VITE_BASE_URL: /monkeywork/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -95,7 +95,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: Duckly ${{ github.ref_name }}
+          name: Monkeywork ${{ github.ref_name }}
           body: |
             ## What's Changed
 

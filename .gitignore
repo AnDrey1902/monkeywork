@@ -25,3 +25,8 @@ dist-ssr
 
 # Screenshots
 docs/screenshots
+
+# ZCode workspace & temp reports
+.zcode/
+report2.json
+biome-report.json

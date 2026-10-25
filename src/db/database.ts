@@ -1,6 +1,6 @@
 import { sqlite3Worker1Promiser } from "@sqlite.org/sqlite-wasm";
 import { runMigrations } from "./migrations";
-import type { Tag, Task, TaskCreate, TaskUpdate, DBNotification } from "./schema";
+import type { DBNotification, Tag, Task, TaskCreate, TaskUpdate } from "./schema";
 
 // SQLite Worker Promiser type
 type WorkerResult = {
@@ -266,7 +266,9 @@ export class DatabaseClient {
   }
 
   async getAllTasks(): Promise<Task[]> {
-    const rows = await this.query<Record<string, unknown>>("SELECT * FROM tasks ORDER BY created_at DESC");
+    const rows = await this.query<Record<string, unknown>>(
+      "SELECT * FROM tasks ORDER BY created_at DESC",
+    );
     const tagsByTask = await this.getAllTagLinks();
     return rows.map((r) => this.mapTask({ ...r, tags: tagsByTask.get(r.id as string) ?? [] }));
   }
@@ -326,9 +328,7 @@ export class DatabaseClient {
   // ── Notification CRUD ──
 
   async getAllNotifications(): Promise<DBNotification[]> {
-    return this.query<DBNotification>(
-      "SELECT * FROM notifications ORDER BY created_at DESC",
-    );
+    return this.query<DBNotification>("SELECT * FROM notifications ORDER BY created_at DESC");
   }
 
   async createNotification(data: {
@@ -370,10 +370,7 @@ export class DatabaseClient {
     return rows[0]?.["COUNT(*)"] ?? 0;
   }
 
-  async hasNotification(
-    taskId: string,
-    type: string,
-  ): Promise<boolean> {
+  async hasNotification(taskId: string, type: string): Promise<boolean> {
     const rows = await this.query(
       "SELECT 1 FROM notifications WHERE task_id = $taskId AND type = $type LIMIT 1",
       { $taskId: taskId, $type: type },
@@ -391,23 +388,24 @@ async function openDatabase(): Promise<DatabaseClient> {
   let openResponse: WorkerResponse;
   try {
     openResponse = await p("open", {
-      filename: "duckly.db",
+      filename: "monkeywork.db",
       vfs: "opfs",
     });
   } catch (err) {
     console.warn("[DB] OPFS unavailable, falling back to default VFS:", JSON.stringify(err));
     openResponse = await p("open", {
-      filename: "duckly.db",
+      filename: "monkeywork.db",
     });
   }
   const openResult = unwrapResponse(openResponse);
   currentDbId = openResult.dbId ?? openResponse.dbId ?? "default";
 
-  dbInstance = new DatabaseClient(p, currentDbId);
+  const db = new DatabaseClient(p, currentDbId);
+  dbInstance = db;
 
   // Run migrations
   await runMigrations(async (sql: string) => {
-    await dbInstance!.exec(sql);
+    await db.exec(sql);
   });
 
   // Column mapping (snake_case → camelCase + default tags) handled in `mapTask()`.

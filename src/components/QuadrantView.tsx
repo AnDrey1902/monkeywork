@@ -1,21 +1,21 @@
-import { useCallback, useMemo, useState } from "react";
+import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import {
+  closestCenter,
   DndContext,
   DragOverlay,
   PointerSensor,
+  useDraggable,
+  useDroppable,
   useSensor,
   useSensors,
-  useDroppable,
-  useDraggable,
-  closestCenter,
 } from "@dnd-kit/core";
-import type { DragStartEvent, DragEndEvent } from "@dnd-kit/core";
 import { AnimatePresence, motion } from "framer-motion";
+import { useCallback, useMemo, useState } from "react";
 import type { Priority, Task } from "../db/schema";
 import { useI18n } from "../i18n/config";
 import { useTaskStore } from "../stores/useTaskStore";
-import TaskCard from "./TaskCard";
 import DragOverlayContent from "./DragOverlayContent";
+import TaskCard from "./TaskCard";
 
 /* ── Constants ── */
 
@@ -61,11 +61,10 @@ const QUADRANT_CONFIGS: QuadrantRawConfig[] = [
 /* ── Sub-components ── */
 
 function DraggableTaskCard({ task }: { task: Task }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: task.id,
-      data: { task },
-    });
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: task.id,
+    data: { task },
+  });
 
   const style = transform
     ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
@@ -83,13 +82,7 @@ function DraggableTaskCard({ task }: { task: Task }) {
   );
 }
 
-function QuadrantColumn({
-  raw,
-  tasks,
-}: {
-  raw: QuadrantRawConfig;
-  tasks: Task[];
-}) {
+function QuadrantColumn({ raw, tasks }: { raw: QuadrantRawConfig; tasks: Task[] }) {
   const { t } = useI18n();
   const { setNodeRef, isOver } = useDroppable({ id: raw.key });
 
@@ -114,7 +107,9 @@ function QuadrantColumn({
             <p className="quadrant-subtitle">{t(raw.subtitleKey)}</p>
           </div>
         </div>
-        <button className={`quadrant-add-btn ${raw.bgColor}`}>+ Add</button>
+        <button type="button" className={`quadrant-add-btn ${raw.bgColor}`}>
+          {t("quadrant.add")}
+        </button>
       </div>
       <div className={`drop-zone ${isOver ? "drag-over" : ""}`}>
         <AnimatePresence>
@@ -133,9 +128,7 @@ function QuadrantColumn({
         </AnimatePresence>
         {tasks.length === 0 && (
           <div className="empty-tip">
-            {raw.key === "not-urgent-not-important"
-              ? t("quadrant.empty")
-              : t("quadrant.drop")}
+            {raw.key === "not-urgent-not-important" ? t("quadrant.empty") : t("quadrant.drop")}
           </div>
         )}
       </div>
@@ -165,13 +158,10 @@ export default function QuadrantView() {
     return map;
   }, [tasks]);
 
-  const handleDragStart = useCallback(
-    (event: DragStartEvent) => {
-      const task = event.active.data.current?.task as Task | undefined;
-      setActiveTask(task ?? null);
-    },
-    [],
-  );
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    const task = event.active.data.current?.task as Task | undefined;
+    setActiveTask(task ?? null);
+  }, []);
 
   const handleDragEnd = useCallback(
     async (event: DragEndEvent) => {
@@ -200,11 +190,7 @@ export default function QuadrantView() {
       >
         <div className="quadrant-grid">
           {QUADRANT_CONFIGS.map((raw) => (
-            <QuadrantColumn
-              key={raw.key}
-              raw={raw}
-              tasks={tasksByPriority[raw.key] || []}
-            />
+            <QuadrantColumn key={raw.key} raw={raw} tasks={tasksByPriority[raw.key] || []} />
           ))}
         </div>
         <DragOverlay dropAnimation={null}>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Duckly Design System — Design Tokens</title>
+  <title>Monkeywork Design System — Design Tokens</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -149,7 +149,7 @@
 <div class="page-wrap">
 
 <header class="hero">
-  <h1>Duckly</h1>
+  <h1>Monkeywork</h1>
   <p class="subtitle">Design System — Visual Token Reference</p>
   <p style="margin-top:var(--space-6);font-size:14px;color:var(--medium-gray)">
     All borders: 2px solid #383838 &bull; Background: #F4EFEA &bull; Font: Inter
@@ -186,7 +186,7 @@
   <div class="type-sample"><div class="label">Body &mdash; 16px/400 or 18px→20px/500</div><div style="font-size:16px">The quick brown fox jumps over the lazy dog.</div></div>
   <div class="type-sample"><div class="label">Button &mdash; 14px &bull; 700 &bull; UPPERCASE</div><div style="font-size:14px;font-weight:700;text-transform:uppercase">SUBMIT &bull; CANCEL &bull; GET STARTED</div></div>
   <div class="type-sample"><div class="label">Label &mdash; 12px &bull; 700 &bull; 0.1em tracking &bull; UPPERCASE</div><div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em">EMAIL &bull; PASSWORD &bull; TAGS</div></div>
-  <div class="type-sample"><div class="label">Monospace &mdash; 13px &bull; Monaco</div><div style="font-family:var(--font-mono);font-size:13px">const query = `SELECT * FROM duckly.analytics LIMIT 100;`</div></div>
+  <div class="type-sample"><div class="label">Monospace &mdash; 13px &bull; Monaco</div><div style="font-family:var(--font-mono);font-size:13px">const query = `SELECT * FROM monkeywork.analytics LIMIT 100;`</div></div>
 </section>
 <hr class="divider">
 
@@ -283,7 +283,7 @@
       <h3 style="font-size:18px;font-weight:700;margin-bottom:var(--space-4)">Form Input</h3>
       <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@example.com"></div>
       <div class="form-group"><label class="form-label">Focused</label><input class="form-input" type="text" placeholder="Type..." style="box-shadow:0 0 0 2px var(--blue)"></div>
-      <div class="form-group" style="margin-bottom:0"><label class="form-label">Filled</label><input class="form-input" type="text" value="hello@duckly.com"></div>
+      <div class="form-group" style="margin-bottom:0"><label class="form-label">Filled</label><input class="form-input" type="text" value="hello@monkeywork.app"></div>
     </div>
     <div class="card">
       <h3 style="font-size:18px;font-weight:700;margin-bottom:var(--space-4)">Checkbox</h3>
@@ -311,7 +311,7 @@
         <span class="sql-comment">-- Analyze recent page views</span><br>
         <span class="sql-keyword">WITH</span> page_metrics <span class="sql-keyword">AS</span> (<br>
         &nbsp;&nbsp;<span class="sql-keyword">SELECT</span> date, <span class="sql-function">COUNT</span>(*) <span class="sql-keyword">AS</span> total_views<br>
-        &nbsp;&nbsp;<span class="sql-keyword">FROM</span> duckly.analytics.events<br>
+        &nbsp;&nbsp;<span class="sql-keyword">FROM</span> monkeywork.analytics.events<br>
         &nbsp;&nbsp;<span class="sql-keyword">WHERE</span> event = <span class="sql-string">'page_view'</span><br>
         )<br>
         <span class="sql-keyword">SELECT</span> * <span class="sql-keyword">FROM</span> page_metrics <span class="sql-keyword">ORDER BY</span> date <span class="sql-keyword">DESC</span>;
@@ -322,7 +322,7 @@
   <div class="card" style="margin-bottom:var(--space-8)">
     <h3 style="font-size:18px;font-weight:700;margin-bottom:var(--space-4)">Card Patterns</h3>
     <div class="grid-3" style="margin-bottom:var(--space-4)">
-      <div class="feature-card"><div class="icon-placeholder">M</div><h3>Duckly</h3><p>Build beautiful Eisenhower matrices with drag-and-drop simplicity.</p></div>
+      <div class="feature-card"><div class="icon-placeholder">M</div><h3>Monkeywork</h3><p>Build beautiful Eisenhower matrices with drag-and-drop simplicity.</p></div>
       <div class="feature-card"><div class="icon-placeholder" style="background:var(--cyan)">D</div><h3>Drag &amp; Drop</h3><p>Organize your tasks with intuitive drag-and-drop.</p></div>
       <div class="feature-card"><div class="icon-placeholder" style="background:var(--yellow)">A</div><h3>Analytics</h3><p>Get insights into your productivity patterns.</p></div>
     </div>
@@ -475,7 +475,7 @@
 </section>
 
 <footer style="text-align:center;padding:var(--space-8) 0;margin-top:var(--space-8);border-top:2px solid var(--light-gray)">
-  <p style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--medium-gray)">Duckly Design System &mdash; Brutalist design tokens</p>
+  <p style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--medium-gray)">Monkeywork Design System &mdash; Brutalist design tokens</p>
 </footer>
 
 </div>

@@ -37,16 +37,12 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: [
-        "favicon.ico",
-        "favicon.svg",
-        "icons/*.png",
-      ],
+      includeAssets: ["favicon.ico", "favicon.svg", "icons/*.png"],
       manifest: {
-        name: "Duckly - manage your everyday",
-        short_name: "Duckly",
-        description: "一款精美的日程管理 Web 应用，支持离线使用",
-        lang: "zh-CN",
+        name: "Monkeywork — планировщик задач",
+        short_name: "Monkeywork",
+        description: "Планировщик задач с матрицей Эйзенхауэра, календарём и офлайн-режимом",
+        lang: "ru",
         start_url: base,
         scope: base,
         display: "standalone",
@@ -70,26 +66,26 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,wasm,ico,png,svg,webmanifest}"],
         runtimeCaching: [
           {
-            // 缓存 Google Fonts 样式表
+            // Cache Google Fonts stylesheets
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "CacheFirst",
             options: {
               cacheName: "google-fonts-css",
               expiration: {
                 maxEntries: 4,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 年
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
               },
             },
           },
           {
-            // 缓存 Google Fonts 字体文件
+            // Cache Google Fonts font files
             urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
             handler: "CacheFirst",
             options: {
               cacheName: "google-fonts-webfonts",
               expiration: {
                 maxEntries: 8,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 年
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
               },
             },
           },

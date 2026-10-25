@@ -6,19 +6,40 @@ export default function BarChart() {
   const { t } = useI18n();
   const tasks = useTaskStore((s) => s.tasks);
 
-  const QUADRANT_CONFIGS = [
-    { key: "urgent-important" as const, label: t("stats.quadrantLabels").split(",")[0], color: "var(--coral)", className: "coral" },
-    { key: "not-urgent-important" as const, label: t("stats.quadrantLabels").split(",")[1], color: "var(--blue)", className: "blue" },
-    { key: "urgent-not-important" as const, label: t("stats.quadrantLabels").split(",")[2], color: "var(--yellow)", className: "yellow" },
-    { key: "not-urgent-not-important" as const, label: t("stats.quadrantLabels").split(",")[3], color: "var(--cyan)", className: "cyan" },
-  ];
+  const quadrantLabels = useMemo(() => t("stats.quadrantLabels").split(","), [t]);
 
   const counts = useMemo(() => {
-    return QUADRANT_CONFIGS.map((q) => ({
+    const configs = [
+      {
+        key: "urgent-important" as const,
+        label: quadrantLabels[0],
+        color: "var(--coral)",
+        className: "coral",
+      },
+      {
+        key: "not-urgent-important" as const,
+        label: quadrantLabels[1],
+        color: "var(--blue)",
+        className: "blue",
+      },
+      {
+        key: "urgent-not-important" as const,
+        label: quadrantLabels[2],
+        color: "var(--yellow)",
+        className: "yellow",
+      },
+      {
+        key: "not-urgent-not-important" as const,
+        label: quadrantLabels[3],
+        color: "var(--cyan)",
+        className: "cyan",
+      },
+    ];
+    return configs.map((q) => ({
       ...q,
       count: tasks.filter((t) => t.priority === q.key).length,
     }));
-  }, [tasks, QUADRANT_CONFIGS]);
+  }, [tasks, quadrantLabels]);
 
   const maxCount = Math.max(...counts.map((c) => c.count), 1);
 

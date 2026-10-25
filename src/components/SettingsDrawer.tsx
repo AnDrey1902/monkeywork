@@ -8,6 +8,7 @@ import type { NotifToggle, WebhookEvent } from "../stores/useNotificationStore";
 import { useNotificationStore } from "../stores/useNotificationStore";
 import { useTaskStore } from "../stores/useTaskStore";
 import { useUIStore } from "../stores/useUIStore";
+import { handleActivate } from "../utils/a11y";
 import { isValidUrl } from "../utils/validation";
 
 export default function SettingsDrawer() {
@@ -36,7 +37,7 @@ export default function SettingsDrawer() {
   // Sync dark mode with document
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
-    localStorage.setItem("duckly-dark-mode", darkMode ? "1" : "0");
+    localStorage.setItem("monkeywork-dark-mode", darkMode ? "1" : "0");
   }, [darkMode]);
 
   // Close on Escape
@@ -50,17 +51,32 @@ export default function SettingsDrawer() {
     }
   }, [showSettings, closeSettings]);
 
+  const confirmClearAll = async () => {
+    const count = useTaskStore.getState().tasks.length;
+    const ok = await confirm({
+      message: t("task.confirmDeleteAll").replace("{count}", String(count)),
+      variant: "danger",
+    });
+    if (ok) {
+      deleteAllTasks();
+      clearAllNotifications();
+      showToast(t("settings.allDataCleared"), "warning");
+    }
+  };
+
   return (
     <>
       <ConfirmDialog />
       {/* Overlay */}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: supplementary click target, keyboard users close via Escape/close button */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: supplementary click target, keyboard users close via Escape/close button */}
       <div className={`drawer-overlay ${showSettings ? "open" : ""}`} onClick={closeSettings} />
 
       {/* Drawer */}
       <div className={`drawer ${showSettings ? "open" : ""}`}>
         <div className="drawer-header">
           <div className="drawer-header-title">
-            <svg className="icon icon-24" viewBox="0 0 24 24" fill="none">
+            <svg className="icon icon-24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
               <path
                 d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
@@ -70,8 +86,13 @@ export default function SettingsDrawer() {
             </svg>
             {t("settings.title")}
           </div>
-          <button className="drawer-close" onClick={closeSettings} aria-label="Close settings">
-            <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+          <button
+            type="button"
+            className="drawer-close"
+            onClick={closeSettings}
+            aria-label={t("common.close")}
+          >
+            <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M6 6l12 12M18 6l-12 12"
                 stroke="currentColor"
@@ -88,9 +109,12 @@ export default function SettingsDrawer() {
             <div className="drawer-section-title">{t("settings.appearance")}</div>
             <div className="drawer-toggle-group">
               <span className="drawer-toggle-label">{t("settings.darkMode")}</span>
-              <div
+              <input
+                type="checkbox"
                 className={`drawer-toggle ${darkMode ? "on" : ""}`}
-                onClick={() => setDarkMode(!darkMode)}
+                aria-label={t("settings.darkMode")}
+                checked={darkMode}
+                onChange={() => setDarkMode(!darkMode)}
               />
             </div>
           </div>
@@ -102,7 +126,7 @@ export default function SettingsDrawer() {
             {/* Webhook */}
             <div className="drawer-item" style={{ cursor: "default", flexWrap: "wrap" }}>
               <div className="drawer-item-icon">
-                <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+                <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
                     d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 0 1 9-9"
                     stroke="currentColor"
@@ -131,35 +155,32 @@ export default function SettingsDrawer() {
                 <div className="webhook-event-grid">
                   {(["due", "done", "create", "change", "delete"] as WebhookEvent[]).map(
                     (event) => (
-                      <div
+                      <label
                         key={event}
                         className={`webhook-event-item ${settings.webhookEvents[event] ? "active" : ""}`}
-                        onClick={() => toggleWebhookEvent(event)}
                       >
                         <input
                           type="checkbox"
-                          name={"webhook-" + event}
+                          name={`webhook-${event}`}
                           checked={settings.webhookEvents[event]}
-                          readOnly
+                          onChange={() => toggleWebhookEvent(event)}
                         />
-                        {t("webhook.event" + event.charAt(0).toUpperCase() + event.slice(1))}
-                      </div>
+                        {t(`webhook.event${event.charAt(0).toUpperCase()}${event.slice(1)}`)}
+                      </label>
                     ),
                   )}
                 </div>
                 <div className="webhook-actions">
                   <button
+                    type="button"
                     className="btn btn-small btn-primary"
                     onClick={async () => {
                       if (!settings.webhookUrl) {
-                        showToast("Please enter a webhook URL", "error");
+                        showToast(t("settings.enterWebhookUrl"), "error");
                         return;
                       }
                       if (!isValidUrl(settings.webhookUrl)) {
-                        showToast(
-                          "Invalid URL format (must start with http:// or https://)",
-                          "error",
-                        );
+                        showToast(t("settings.invalidUrl"), "error");
                         return;
                       }
                       setTesting(true);
@@ -168,27 +189,30 @@ export default function SettingsDrawer() {
                       showToast(
                         ok
                           ? `${t("settings.webhookTested")} (HTTP 200)`
-                          : "Webhook test failed — check the URL or try again",
+                          : t("settings.webhookTestFailed"),
                         ok ? "success" : "error",
                       );
                     }}
                   >
-                    {testing ? "Sending…" : t("settings.webhookSaveTest")}
+                    {testing ? t("settings.sending") : t("settings.webhookSaveTest")}
                   </button>
                   <button
+                    type="button"
                     className="btn btn-small"
                     onClick={async () => {
                       if (!settings.webhookUrl) {
-                        showToast("Please enter a webhook URL first", "warning");
+                        showToast(t("settings.enterWebhookUrl"), "warning");
                         return;
                       }
                       if (!isValidUrl(settings.webhookUrl)) {
-                        showToast("Invalid URL format", "error");
+                        showToast(t("settings.invalidUrl"), "error");
                         return;
                       }
                       const ok = await testWebhook();
                       showToast(
-                        ok ? `${t("settings.webhookTested")} (HTTP 200)` : "Webhook test failed",
+                        ok
+                          ? `${t("settings.webhookTested")} (HTTP 200)`
+                          : t("settings.webhookTestFailed"),
                         ok ? "success" : "error",
                       );
                     }}
@@ -196,6 +220,7 @@ export default function SettingsDrawer() {
                     {t("settings.webhookTest")}
                   </button>
                   <button
+                    type="button"
                     className="btn btn-small"
                     onClick={() => setShowLogs(!showLogs)}
                     disabled={webhookLogs.length === 0}
@@ -204,6 +229,7 @@ export default function SettingsDrawer() {
                     {webhookLogs.length > 0 ? ` (${webhookLogs.length})` : ""}
                   </button>
                   <button
+                    type="button"
                     className="btn btn-small btn-danger"
                     onClick={() => {
                       deleteWebhook();
@@ -275,6 +301,7 @@ export default function SettingsDrawer() {
                           ))}
                         </div>
                         <button
+                          type="button"
                           className="btn btn-small"
                           onClick={() => {
                             clearWebhookLogs();
@@ -305,22 +332,30 @@ export default function SettingsDrawer() {
                 if (!file) return;
                 try {
                   const count = await importTasks(file);
-                  showToast(`成功导入 ${count} 个任务`, "success");
+                  showToast(t("excel.importSuccess").replace("{count}", String(count)), "success");
                 } catch (err) {
-                  showToast(`导入失败: ${(err as Error).message}`, "error");
+                  showToast(
+                    t("excel.importFailed").replace("{error}", (err as Error).message),
+                    "error",
+                  );
                 }
                 e.target.value = "";
               }}
             />
+            {/* div вместо button: внутри вложенная кнопка «Шаблон» — вложенные button недопустимы */}
+            {/* biome-ignore lint/a11y/useSemanticElements: contains a nested <button>, native button would be invalid HTML */}
             <div
+              role="button"
+              tabIndex={0}
               className="drawer-item"
               onClick={() => {
                 importInputRef.current?.click();
               }}
+              onKeyDown={handleActivate(() => importInputRef.current?.click())}
               style={{ cursor: "pointer" }}
             >
               <div className="drawer-item-icon">
-                <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+                <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
                     d="M6 4h10l4 4v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"
                     stroke="currentColor"
@@ -346,7 +381,8 @@ export default function SettingsDrawer() {
                 <div className="drawer-item-desc">{t("excel.descImport")}</div>
               </div>
               <div className="drawer-item-right">
-                <span
+                <button
+                  type="button"
                   className="tag tag-pill"
                   style={{ fontSize: 11, padding: "1px 6px", cursor: "pointer" }}
                   onClick={(e) => {
@@ -355,12 +391,12 @@ export default function SettingsDrawer() {
                   }}
                 >
                   {t("excel.template")}
-                </span>
+                </button>
               </div>
             </div>
-            <div className="drawer-item" onClick={exportTasks} style={{ cursor: "pointer" }}>
+            <button type="button" className="drawer-item" onClick={exportTasks}>
               <div className="drawer-item-icon">
-                <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+                <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
                     d="M6 4h10l4 4v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"
                     stroke="currentColor"
@@ -386,25 +422,10 @@ export default function SettingsDrawer() {
                 <div className="drawer-item-desc">{t("excel.descExport")}</div>
               </div>
               <div className="drawer-item-right">→</div>
-            </div>
-            <div
-              className="drawer-item"
-              onClick={async () => {
-                const count = useTaskStore.getState().tasks.length;
-                const ok = await confirm({
-                  message: t("task.confirmDeleteAll").replace("{count}", String(count)),
-                  variant: "danger",
-                });
-                if (ok) {
-                  deleteAllTasks();
-                  clearAllNotifications();
-                  showToast("All data cleared", "warning");
-                }
-              }}
-              style={{ cursor: "pointer" }}
-            >
+            </button>
+            <button type="button" className="drawer-item" onClick={confirmClearAll}>
               <div className="drawer-item-icon" style={{ borderColor: "var(--coral)" }}>
-                <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+                <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
                     d="M5 7h14M10 7V4h4v3M6 7v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7"
                     stroke="currentColor"
@@ -421,7 +442,7 @@ export default function SettingsDrawer() {
               <div className="drawer-item-right" style={{ color: "var(--coral)" }}>
                 ⚠
               </div>
-            </div>
+            </button>
           </div>
 
           {/* Notifications */}
@@ -438,9 +459,12 @@ export default function SettingsDrawer() {
             ).map((item) => (
               <div key={item.key} className="drawer-toggle-group">
                 <span className="drawer-toggle-label">{item.label}</span>
-                <div
+                <input
+                  type="checkbox"
                   className={`drawer-toggle ${settings.toggles[item.key] ? "on" : ""}`}
-                  onClick={() => setToggle(item.key, !settings.toggles[item.key])}
+                  aria-label={item.label}
+                  checked={settings.toggles[item.key]}
+                  onChange={() => setToggle(item.key, !settings.toggles[item.key])}
                 />
               </div>
             ))}
@@ -449,13 +473,13 @@ export default function SettingsDrawer() {
           {/* About */}
           <div className="drawer-section">
             <div className="drawer-section-title">{t("settings.about")}</div>
-            <div
+            <button
+              type="button"
               className="drawer-item"
               onClick={() => window.open("https://github.com/niyongsheng/duckly", "_blank")}
-              style={{ cursor: "pointer" }}
             >
               <div className="drawer-item-icon">
-                <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+                <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
                   <path
                     d="M12 8v4M12 16h0"
@@ -470,14 +494,14 @@ export default function SettingsDrawer() {
                 <div className="drawer-item-desc">{t("settings.helpDesc")}</div>
               </div>
               <div className="drawer-item-right">→</div>
-            </div>
-            <div
+            </button>
+            <button
+              type="button"
               className="drawer-item"
               onClick={() => showToast(t("settings.updateDesc"), "success")}
-              style={{ cursor: "pointer" }}
             >
               <div className="drawer-item-icon">
-                <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+                <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
                     d="M18 10h-1.26A8 8 0 1 0 9 20h0"
                     stroke="currentColor"
@@ -499,11 +523,11 @@ export default function SettingsDrawer() {
                 <div className="drawer-item-desc">{t("settings.updateDesc")}</div>
               </div>
               <div className="drawer-item-right">✓</div>
-            </div>
+            </button>
             {canInstall && (
-              <div className="drawer-item" onClick={installApp}>
+              <button type="button" className="drawer-item" onClick={installApp}>
                 <div className="drawer-item-icon">
-                  <svg className="icon icon-18" viewBox="0 0 24 24" fill="none">
+                  <svg className="icon icon-18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path
                       d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
                       stroke="currentColor"
@@ -535,7 +559,7 @@ export default function SettingsDrawer() {
                   <div className="drawer-item-desc">{t("settings.installDesc")}</div>
                 </div>
                 <div className="drawer-item-right">↓</div>
-              </div>
+              </button>
             )}
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
+import { useI18n } from "../i18n/config";
 
 interface ModalProps {
   isOpen: boolean;
@@ -10,7 +11,15 @@ interface ModalProps {
   compact?: boolean;
 }
 
-export default function Modal({ isOpen, onClose, title, children, maxWidth = "1152px", compact = false }: ModalProps) {
+export default function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  maxWidth = "1152px",
+  compact = false,
+}: ModalProps) {
+  const { t } = useI18n();
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,6 +51,9 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = "11
           {/* Content */}
           <motion.div
             ref={contentRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={title}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
@@ -62,16 +74,37 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = "11
             <div
               className="sticky top-0 z-10 flex items-center justify-between"
               style={{
-                padding: compact ? "var(--space-3) var(--space-4)" : "var(--space-8) var(--space-8) var(--space-6)",
+                padding: compact
+                  ? "var(--space-3) var(--space-4)"
+                  : "var(--space-8) var(--space-8) var(--space-6)",
                 background: "var(--bg-card)",
                 borderBottom: "var(--border-default)",
                 borderTopLeftRadius: "var(--radius-xl)",
                 borderTopRightRadius: "var(--radius-xl)",
               }}
             >
-              <h2 style={compact ? { fontSize: 20, fontWeight: 700, letterSpacing: "-0.025em", color: "var(--dark-gray)" } : undefined} className={compact ? undefined : "modal-title"}>{title}</h2>
-              <button onClick={onClose} className="modal-close" aria-label="Close">
-                <svg className="icon icon-24" viewBox="0 0 24 24" fill="none">
+              <h2
+                style={
+                  compact
+                    ? {
+                        fontSize: 20,
+                        fontWeight: 700,
+                        letterSpacing: "-0.025em",
+                        color: "var(--dark-gray)",
+                      }
+                    : undefined
+                }
+                className={compact ? undefined : "modal-title"}
+              >
+                {title}
+              </h2>
+              <button
+                type="button"
+                onClick={onClose}
+                className="modal-close"
+                aria-label={t("common.close")}
+              >
+                <svg className="icon icon-24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
                     d="M6 6l12 12M18 6l-12 12"
                     stroke="currentColor"
@@ -83,7 +116,15 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = "11
             </div>
 
             {/* Body */}
-            <div style={{ padding: compact ? "var(--space-4) var(--space-5) var(--space-5)" : "var(--space-8)" }}>{children}</div>
+            <div
+              style={{
+                padding: compact
+                  ? "var(--space-4) var(--space-5) var(--space-5)"
+                  : "var(--space-8)",
+              }}
+            >
+              {children}
+            </div>
           </motion.div>
         </div>
       )}

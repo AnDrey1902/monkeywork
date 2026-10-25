@@ -71,11 +71,12 @@ export default function ListView() {
                 onKeyDown={handleKeyDown}
               />
               <button
+                type="button"
                 className="btn btn-small"
                 aria-label={t("task.search")}
                 onClick={handleSearch}
               >
-                <svg className="icon icon-16" viewBox="0 0 24 24" fill="none">
+                <svg className="icon icon-16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
                   <path
                     d="M16 16l4 4"
@@ -99,7 +100,9 @@ export default function ListView() {
               <option value="urgent-important">{t("priority.urgent-important")}</option>
               <option value="not-urgent-important">{t("priority.not-urgent-important")}</option>
               <option value="urgent-not-important">{t("priority.urgent-not-important")}</option>
-              <option value="not-urgent-not-important">{t("priority.not-urgent-not-important")}</option>
+              <option value="not-urgent-not-important">
+                {t("priority.not-urgent-not-important")}
+              </option>
             </select>
             <select
               className="btn btn-small filter-select"
@@ -146,6 +149,7 @@ export default function ListView() {
           {totalPages > 1 && (
             <div style={{ display: "flex", gap: "var(--space-2)" }}>
               <button
+                type="button"
                 className="btn btn-small"
                 disabled={safePage <= 1}
                 style={{ opacity: safePage <= 1 ? 0.4 : 1 }}
@@ -155,6 +159,7 @@ export default function ListView() {
               </button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                 <button
+                  type="button"
                   key={p}
                   className={`btn btn-small ${p === safePage ? "btn-primary" : ""}`}
                   onClick={() => setPage(p)}
@@ -163,6 +168,7 @@ export default function ListView() {
                 </button>
               ))}
               <button
+                type="button"
                 className="btn btn-small"
                 disabled={safePage >= totalPages}
                 style={{ opacity: safePage >= totalPages ? 0.4 : 1 }}

@@ -1,5 +1,5 @@
 {
-  "app.title": "Duckly",
+  "app.title": "Monkeywork",
   "app.subtitle": "Eisenhower Matrix Scheduler",
 
   "header.calendar": "Calendar",
@@ -78,9 +78,9 @@
   "repeat.weekly": "Weekly",
   "repeat.monthly": "Monthly",
 
-  "duck.happy": "Great progress today! 🦆",
-  "duck.neutral": "Add some tasks~",
-  "duck.sad": "Still have tasks to do >_<",
+  "mascot.happy": "Great progress today! 🐵",
+  "mascot.neutral": "Add some tasks~",
+  "mascot.sad": "Still have tasks to do >_<",
 
   "excel.import": "Import",
   "excel.export": "Export",
@@ -89,6 +89,8 @@
   "excel.exportTitle": "Export All",
   "excel.descImport": "Import tasks from CSV / Excel",
   "excel.descExport": "Backup all task data to local",
+  "excel.importSuccess": "Imported {count} tasks",
+  "excel.importFailed": "Import failed: {error}",
 
   "ai.title": "AI Channel",
   "ai.readwrite": "Read & Write",
@@ -127,8 +129,13 @@
   "settings.logsDesc": "AI channel request and response logs",
   "settings.apiDocs": "API Documentation",
   "settings.apiDocsDesc": "View API docs and integration guide",
-  "settings.footer": "Duckly v1.0.0 · Local OPFS Storage · Offline Ready",
+  "settings.footer": "Monkeywork v1.0.0 · Local OPFS Storage · Offline Ready",
   "settings.installDesc": "Install to device desktop",
+  "settings.enterWebhookUrl": "Please enter a webhook URL",
+  "settings.invalidUrl": "Invalid URL format (must start with http:// or https://)",
+  "settings.webhookTestFailed": "Webhook test failed — check the URL or try again",
+  "settings.sending": "Sending…",
+  "settings.allDataCleared": "All data cleared",
 
   "notif.title": "Notifications",
   "notif.unread": "unread",
@@ -165,7 +172,7 @@
   "network.online": "Online",
   "network.offline": "Offline",
 
-  "pwa.install": "Install Duckly",
+  "pwa.install": "Install Monkeywork",
   "pwa.offline": "You are offline",
   "pwa.online": "Back online",
 
@@ -233,6 +240,8 @@
 
   "tag.presets": "Development,Urgent Business,Personal Growth,Daily Tasks,Product Requirements,Meeting",
   "tag.presetsForm": "Development,Product Requirements,Personal Growth,Daily Tasks,Urgent Business,Meeting",
+  "tag.empty": "No tags yet — create the first one",
+  "tag.deleteConfirm": "Delete tag \"{name}\"?",
 
   "webhook.eventDue": "Due Reminder",
   "webhook.eventDone": "Task Done",
@@ -258,5 +267,9 @@
   "notif.overdue": "「{title}」overdue",
   "notif.taskCreated": "「{title}」created",
   "notif.taskCompleted": "「{title}」completed",
-  "notif.deadlineChanged": "「{title}」deadline changed"
+  "notif.deadlineChanged": "「{title}」deadline changed",
+
+  "common.close": "Close",
+  "common.loading": "Loading…",
+  "common.delete": "Click to delete"
 }

@@ -57,7 +57,7 @@ export default function TagSelector({ tags, onChange }: TagSelectorProps) {
         <button
           type="button"
           onClick={addTag}
-          className="btn-duck bg-cartoon-warm text-cartoon-text text-sm px-3"
+          className="btn-monkey bg-cartoon-warm text-cartoon-text text-sm px-3"
         >
           +
         </button>
