@@ -23,8 +23,13 @@ export default defineConfig({
     rollupOptions: {
       output: {
         assetFileNames: (assetInfo) => {
-          // Preserve original name so the SQLite worker can find sqlite3.wasm
-          if (assetInfo.name === "sqlite3.wasm") {
+          // Preserve original names so the SQLite worker can locate its assets:
+          // the wasm is loaded via locateFile, and the OPFS async proxy is
+          // resolved at runtime as a relative URL next to the worker script.
+          if (
+            assetInfo.name === "sqlite3.wasm" ||
+            assetInfo.name?.startsWith("sqlite3-opfs-async-proxy")
+          ) {
             return "assets/[name][extname]";
           }
           return "assets/[name]-[hash][extname]";
