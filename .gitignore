@@ -28,3 +28,7 @@ docs/screenshots
 
 # ZCode workspace
 .zcode/
+
+# Agent session files (kept locally, not published)
+CLAUDE.md
+WORKLOG.md
