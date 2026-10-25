@@ -21,6 +21,14 @@
 
 ---
 
+## Скриншот
+
+<p align="center">
+  <img src="./docs/screenshot.png" alt="Monkeywork — вид календаря" width="820">
+</p>
+
+---
+
 ## Возможности
 
 | Возможность | Описание |

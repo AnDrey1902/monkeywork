@@ -21,6 +21,14 @@
 
 ---
 
+## Screenshot
+
+<p align="center">
+  <img src="./docs/screenshot.png" alt="Monkeywork — calendar view" width="820">
+</p>
+
+---
+
 ## Features
 
 | Capability | Description |
