@@ -2697,12 +2697,14 @@ button.notif-item {
 
 .webhook-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
   margin-top: var(--space-2);
 }
 
 .webhook-actions .btn-small {
-  flex: 1;
+  flex: 1 0 auto;
+  min-width: fit-content;
   font-size: 11px;
   padding: var(--space-1) var(--space-2);
 }
